@@ -1,64 +1,88 @@
-// Telegram Web App initialization
-const tg = window.Telegram.WebApp;
+// Переменные для таймера и игрового процесса
+let stopwatchInterval;
+let stars = 0; // Начальное количество звезд
+let timeSpeed = 1; // Начальная скорость времени
+let elapsedTime = 0; // Общее прошедшее время
+let isRunning = false; // Флаг состояния таймера
+let lastUpdateTime = Date.now(); // Время последнего обновления
 
-// Example of initializing WebApp
-tg.ready();
+// Получение элементов из DOM
+const startButton = document.getElementById('startButton');
+const stopwatchDisplay = document.getElementById('stopwatch');
+const starsDisplay = document.getElementById('starsDisplay');
 
-// Get user info
-const user = tg.initDataUnsafe?.user || { first_name: "Guest" };
-
-// Example: update the header color
-tg.MainButton.setText("Start Mining!");
-tg.MainButton.show();
-
-// Timer and UI logic
-let stars = 0;
-let elapsedTime = 0;
-let isRunning = false;
-let lastUpdateTime = Date.now();
-
-const stopwatchDisplay = document.getElementById("stopwatch");
-const starsDisplay = document.getElementById("starsDisplay");
-
+// Функция форматирования времени
 function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
+    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-function updateUI() {
+// Обновление прошедшего времени
+function updateElapsedTime() {
+    const now = Date.now();
+    elapsedTime += (now - lastUpdateTime) * timeSpeed;
+    lastUpdateTime = now;
+}
+
+// Отображение времени на экране
+function displayElapsedTime() {
     stopwatchDisplay.textContent = formatTime(elapsedTime);
+}
+
+// Запуск таймера
+function startStopwatch() {
+    if (!isRunning) {
+        lastUpdateTime = Date.now();
+        stopwatchInterval = setInterval(() => {
+            updateElapsedTime();
+            displayElapsedTime();
+        }, 1000);
+        isRunning = true;
+        startButton.style.display = 'none'; // Скрыть кнопку "Старт"
+    }
+}
+
+// Остановка таймера
+function stopStopwatch() {
+    if (isRunning) {
+        updateElapsedTime();
+        clearInterval(stopwatchInterval);
+        isRunning = false;
+    }
+}
+
+// Обновление интерфейса
+function updateUI() {
     starsDisplay.textContent = `⭐ ${stars}`;
 }
 
-function startTimer() {
-    if (!isRunning) {
-        isRunning = true;
-        lastUpdateTime = Date.now();
-        tg.MainButton.setText("Stop Mining");
-        tg.MainButton.onClick(stopTimer);
-    }
-}
+// Обработка кнопок
+document.getElementById('upgradeButton').addEventListener('click', () => {
+    window.location.href = "upgrade.html"; // Переход на страницу улучшений
+});
 
-function stopTimer() {
-    if (isRunning) {
-        isRunning = false;
-        stars += Math.floor(elapsedTime / 1000); // Example: 1 star per second
-        updateUI();
-        tg.MainButton.setText("Start Mining");
-        tg.MainButton.onClick(startTimer);
-    }
-}
+document.getElementById('boxButton').addEventListener('click', () => {
+    window.location.href = "box.html"; // Переход на страницу коробки
+});
 
-tg.MainButton.onClick(startTimer);
+document.getElementById('earnButton').addEventListener('click', () => {
+    alert("Функция 'Заработать' будет добавлена в будущем.");
+});
 
-// Update the stopwatch display every second
-setInterval(() => {
-    if (isRunning) {
-        const now = Date.now();
-        elapsedTime += now - lastUpdateTime;
-        lastUpdateTime = now;
-        updateUI();
+// Управление состоянием таймера при смене вкладок
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        stopStopwatch();
+    } else {
+        startStopwatch();
     }
-}, 1000);
+});
+
+// Инициализация при загрузке
+window.addEventListener('load', () => {
+    startStopwatch();
+    updateUI();
+});

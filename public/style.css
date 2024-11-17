@@ -1,32 +1,65 @@
+/* Общие стили для всей страницы */
 body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f8ff;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
 }
 
+/* Контейнер для всего контента */
 .container {
     text-align: center;
     max-width: 320px;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Заголовок */
 h1 {
     font-size: 1.8em;
     margin-bottom: 20px;
+    color: #333;
 }
 
+/* Таймер */
 #stopwatch {
-    font-size: 1.5em;
+    font-size: 2em;
+    font-weight: bold;
     margin: 20px 0;
+    color: #4CAF50;
 }
 
+/* Отображение звезд */
+#starsDisplay {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #ff9800;
+}
+
+/* Кнопки */
 .buttons button {
-    font-size: 0.9em;
-    margin: 5px;
+    font-size: 1em;
     padding: 10px;
+    margin: 5px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    width: 80px;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.buttons button:hover {
+    background-color: #0056b3;
+}
+
+.buttons button:active {
+    background-color: #003d80;
 }
