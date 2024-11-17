@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 const BOT_TOKEN = '7295546912:AAHb8CCF3reVfVOje4-UE1P_pneszMiXt2c';
-const WEB_APP_URL = 'https://timegame.vercel.app';
+const WEB_APP_URL = 'time-game-snowy.vercel.app';
 
 // Функция для установки Web App URL
 async function setupWebApp() {
