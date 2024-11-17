@@ -10,7 +10,7 @@ body {
 
 .container {
     text-align: center;
-    max-width: 320px; /* Для экрана смартфона */
+    max-width: 320px;
 }
 
 h1 {
@@ -28,5 +28,5 @@ h1 {
     margin: 5px;
     padding: 10px;
     cursor: pointer;
-    width: 80px; /* Подогнано под экран смартфона */
+    width: 80px;
 }
