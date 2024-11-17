@@ -15,6 +15,12 @@ const __dirname = path.dirname(__filename);
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Кеширование отключено
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+});
+
 // Маршрут для главной страницы
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -27,13 +33,12 @@ app.post('/web-data', (req, res) => {
     res.status(200).json({ message: 'Данные успешно обработаны' });
 });
 
-// Запуск сервера
-app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту ${PORT}`);
+// Обработка неправильных маршрутов
+app.use((req, res) => {
+    res.status(404).send('Страница не найдена');
 });
 
-
-app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store');
-    next();
+// Запуск сервера
+app.listen(PORT, () => {
+    console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
