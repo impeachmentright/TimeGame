@@ -1,65 +1,71 @@
-/* Общие стили для всей страницы */
 body {
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #000; /* Черный фон */
+    color: #0f0; /* Зеленый текст */
 }
 
-/* Контейнер для всего контента */
-.container {
-    text-align: center;
-    max-width: 320px;
+#terminal {
+    width: 80%;
+    max-width: 600px;
+    border: 2px solid #0f0;
     padding: 20px;
-    background-color: #ffffff;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    background-color: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-/* Заголовок */
-h1 {
-    font-size: 1.8em;
+#terminal-header {
+    width: 100%;
+    text-align: center;
     margin-bottom: 20px;
-    color: #333;
+    font-size: 1.2em;
 }
 
-/* Таймер */
+#terminal-body {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
 #stopwatch {
     font-size: 2em;
-    font-weight: bold;
-    margin: 20px 0;
-    color: #4CAF50;
-}
-
-/* Отображение звезд */
-#starsDisplay {
-    font-size: 1.2em;
     margin-bottom: 20px;
-    color: #ff9800;
 }
 
-/* Кнопки */
-.buttons button {
-    font-size: 1em;
-    padding: 10px;
-    margin: 5px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
+#action-buttons {
+    display: flex;
+    justify-content: space-around;
     width: 100%;
+    margin-bottom: 20px;
 }
 
-.buttons button:hover {
-    background-color: #0056b3;
+#action-buttons button,
+#purchase-section button {
+    background: none;
+    border: 2px solid #0f0;
+    color: #0f0;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.buttons button:active {
-    background-color: #003d80;
+#action-buttons button:hover,
+#purchase-section button:hover {
+    background-color: #0f0;
+    color: #000;
+}
+
+#purchase-section {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
 }

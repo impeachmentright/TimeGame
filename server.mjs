@@ -1,41 +1,76 @@
-// Импорт необходимых модулей
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import fetch from 'node-fetch';
 
-// Настройка приложения Express
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Получение текущего пути и директории
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Ваш токен бота Telegram
+const BOT_TOKEN = '7295546912:AAHb8CCF3reVfVOje4-UE1P_pneszMiXt2c';
 
-// Middleware для обработки JSON и статических файлов
+// Адрес вашего веб-приложения
+const WEB_APP_URL = 'https://time-game-snowy.vercel.app';
+
+// Создаем маршруты для обработки покупки
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// Кеширование отключено
-app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-store');
-    next();
+// Генерация ссылки на покупку через Telegram Stars
+app.post('/purchase/:item', async (req, res) => {
+    const { item } = req.params;
+
+    // Цены на предметы (в копейках, 1 звезда = 100 копеек)
+    const prices = {
+        upgrade: [{ label: "Ускорение времени", amount: 500 * 100 }], // 500 звезд
+        earn: [{ label: "Получение награды", amount: 300 * 100 }], // 300 звезд
+        box: [{ label: "Секретная коробка", amount: 1000 * 100 }], // 1000 звезд
+    };
+
+    if (!prices[item]) {
+        return res.status(400).json({ success: false, message: "Неверный предмет для покупки." });
+    }
+
+    try {
+        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendInvoice`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: req.body.chat_id, // ID пользователя Telegram
+                title: `Покупка: ${item}`,
+                description: `Купить ${item} для Time Game.`,
+                payload: `purchase-${item}`,
+                provider_token: '', // Токен провайдера для цифровых товаров
+                currency: 'XTR', // Оплата звездами (Stars)
+                prices: prices[item],
+                start_parameter: `purchase-${item}`, // Идентификатор платежа
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.ok) {
+            res.json({ success: true, message: "Счет успешно отправлен." });
+        } else {
+            console.error('Ошибка создания счета:', data.description);
+            res.status(500).json({ success: false, message: data.description });
+        }
+    } catch (error) {
+        console.error('Ошибка сервера при создании счета:', error);
+        res.status(500).json({ success: false, message: "Ошибка сервера." });
+    }
 });
 
-// Маршрут для главной страницы
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+// Вебхук для обработки успешных платежей
+app.post('/webhook', (req, res) => {
+    const update = req.body;
 
-// Обработка данных от Telegram Web App (например, для авторизации)
-app.post('/web-data', (req, res) => {
-    const telegramData = req.body;
-    console.log('Получены данные от Telegram:', telegramData);
-    res.status(200).json({ message: 'Данные успешно обработаны' });
-});
+    if (update.message && update.message.successful_payment) {
+        const paymentInfo = update.message.successful_payment;
 
-// Обработка неправильных маршрутов
-app.use((req, res) => {
-    res.status(404).send('Страница не найдена');
+        console.log('Успешный платеж:', paymentInfo);
+
+        // Добавьте логику для начисления бонусов в игре, если требуется
+    }
+
+    res.sendStatus(200);
 });
 
 // Запуск сервера

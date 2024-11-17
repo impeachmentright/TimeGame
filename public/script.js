@@ -1,15 +1,6 @@
-// Переменные для таймера и игрового процесса
 let stopwatchInterval;
-let stars = 0; // Начальное количество звезд
-let timeSpeed = 1; // Начальная скорость времени
-let elapsedTime = 0; // Общее прошедшее время
-let isRunning = false; // Флаг состояния таймера
-let lastUpdateTime = Date.now(); // Время последнего обновления
-
-// Получение элементов из DOM
-const startButton = document.getElementById('startButton');
-const stopwatchDisplay = document.getElementById('stopwatch');
-const starsDisplay = document.getElementById('starsDisplay');
+let elapsedTime = 0;
+let isRunning = false;
 
 // Функция форматирования времени
 function formatTime(ms) {
@@ -20,59 +11,27 @@ function formatTime(ms) {
     return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
-// Обновление прошедшего времени
-function updateElapsedTime() {
-    const now = Date.now();
-    elapsedTime += (now - lastUpdateTime) * timeSpeed;
-    lastUpdateTime = now;
-}
-
-// Отображение времени на экране
-function displayElapsedTime() {
-    stopwatchDisplay.textContent = formatTime(elapsedTime);
-}
-
-// Запуск таймера
+// Функция запуска таймера
 function startStopwatch() {
     if (!isRunning) {
-        lastUpdateTime = Date.now();
+        const startTime = Date.now() - elapsedTime;
         stopwatchInterval = setInterval(() => {
-            updateElapsedTime();
-            displayElapsedTime();
+            elapsedTime = Date.now() - startTime;
+            document.getElementById('stopwatch').textContent = formatTime(elapsedTime);
         }, 1000);
         isRunning = true;
-        startButton.style.display = 'none'; // Скрыть кнопку "Старт"
     }
 }
 
-// Остановка таймера
+// Функция остановки таймера
 function stopStopwatch() {
     if (isRunning) {
-        updateElapsedTime();
         clearInterval(stopwatchInterval);
         isRunning = false;
     }
 }
 
-// Обновление интерфейса
-function updateUI() {
-    starsDisplay.textContent = `⭐ ${stars}`;
-}
-
-// Обработка кнопок
-document.getElementById('upgradeButton').addEventListener('click', () => {
-    window.location.href = "upgrade.html"; // Переход на страницу улучшений
-});
-
-document.getElementById('boxButton').addEventListener('click', () => {
-    window.location.href = "box.html"; // Переход на страницу коробки
-});
-
-document.getElementById('earnButton').addEventListener('click', () => {
-    alert("Функция 'Заработать' будет добавлена в будущем.");
-});
-
-// Управление состоянием таймера при смене вкладок
+// Управление таймером при переключении вкладок
 document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
         stopStopwatch();
@@ -81,8 +40,41 @@ document.addEventListener('visibilitychange', () => {
     }
 });
 
-// Инициализация при загрузке
-window.addEventListener('load', () => {
+// Переключение разделов
+function goTo(section) {
+    alert(`Переход в раздел: ${section}`);
+}
+
+// Функция для создания инвойса
+async function createInvoice(item) {
+    try {
+        const response = await fetch('/create-invoice', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: '<ID_ПОЛЬЗОВАТЕЛЯ>',
+                title: item === 'speed' ? 'Ускорение' : 'Оффлайн-прогресс',
+                description: item === 'speed' ? 'Повышение скорости майнинга' : 'Оффлайн-прогресс времени',
+                payload: `purchase_${item}`,
+                currency: 'XTR',
+                prices: [{ label: item, amount: item === 'speed' ? 500 : 1000 }],
+            }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Инвойс успешно создан! Проверьте Telegram.');
+        } else {
+            alert(`Ошибка: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Ошибка при создании инвойса:', error);
+        alert('Не удалось создать инвойс.');
+    }
+}
+
+// Запуск таймера при загрузке страницы
+window.onload = () => {
     startStopwatch();
-    updateUI();
-});
+};
