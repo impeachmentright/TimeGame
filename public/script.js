@@ -2,6 +2,18 @@ let stopwatchInterval;
 let elapsedTime = 0;
 let isRunning = false;
 
+// Показать терминал после загрузки
+window.onload = () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    const terminal = document.getElementById('terminal');
+
+    setTimeout(() => {
+        loadingScreen.style.display = 'none';
+        terminal.style.display = 'block';
+        startStopwatch();
+    }, 2000); // Имитируем загрузку на 2 секунды
+};
+
 // Функция форматирования времени
 function formatTime(ms) {
     const totalSeconds = Math.floor(ms / 1000);
@@ -31,16 +43,7 @@ function stopStopwatch() {
     }
 }
 
-// Управление таймером при переключении вкладок
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        stopStopwatch();
-    } else {
-        startStopwatch();
-    }
-});
-
-// Переключение разделов
+// Переключение между вкладками
 function goTo(section) {
     alert(`Переход в раздел: ${section}`);
 }
@@ -73,8 +76,3 @@ async function createInvoice(item) {
         alert('Не удалось создать инвойс.');
     }
 }
-
-// Запуск таймера при загрузке страницы
-window.onload = () => {
-    startStopwatch();
-};
