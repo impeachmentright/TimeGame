@@ -12,12 +12,12 @@
     ],
     "routes": [
         {
-            "src": "/web-data",
+            "src": "/api/(.*)",
             "dest": "/server.mjs"
         },
         {
-            "src": "/.*",
-            "dest": "/index.html"
+            "src": "/(.*)",
+            "dest": "/public/index.html"
         }
     ]
 }
