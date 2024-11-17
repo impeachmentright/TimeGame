@@ -9,21 +9,12 @@ window.onload = () => {
 
     setTimeout(() => {
         loadingScreen.style.display = 'none';
-        terminal.style.display = 'block';
+        terminal.style.display = 'flex';
         startStopwatch();
-    }, 2000); // Имитируем загрузку на 2 секунды
+    }, 2000); // Загрузка 2 секунды
 };
 
-// Функция форматирования времени
-function formatTime(ms) {
-    const totalSeconds = Math.floor(ms / 1000);
-    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-}
-
-// Функция запуска таймера
+// Таймер
 function startStopwatch() {
     if (!isRunning) {
         const startTime = Date.now() - elapsedTime;
@@ -35,44 +26,53 @@ function startStopwatch() {
     }
 }
 
-// Функция остановки таймера
-function stopStopwatch() {
-    if (isRunning) {
-        clearInterval(stopwatchInterval);
-        isRunning = false;
+// Формат времени
+function formatTime(ms) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+
+// Переход между вкладками
+function goTo(section) {
+    const contentSection = document.getElementById('content-section');
+    if (section === 'upgrade') {
+        contentSection.innerHTML = `
+            <h2>Доступные улучшения</h2>
+            <button onclick="createInvoice('speed')">Купить ускорение</button>
+            <button onclick="createInvoice('offline')">Купить оффлайн-прогресс</button>
+        `;
+    } else {
+        contentSection.innerHTML = `<p>Вы выбрали раздел: ${section}</p>`;
     }
 }
 
-// Переключение между вкладками
-function goTo(section) {
-    alert(`Переход в раздел: ${section}`);
-}
-
-// Функция для создания инвойса
+// Создание инвойса
 async function createInvoice(item) {
     try {
         const response = await fetch('/create-invoice', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                chat_id: '<ID_ПОЛЬЗОВАТЕЛЯ>',
+                chat_id: '<USER_CHAT_ID>',
                 title: item === 'speed' ? 'Ускорение' : 'Оффлайн-прогресс',
-                description: item === 'speed' ? 'Повышение скорости майнинга' : 'Оффлайн-прогресс времени',
-                payload: `purchase_${item}`,
+                description: 'Покупка через Telegram Stars',
+                payload: item,
                 currency: 'XTR',
-                prices: [{ label: item, amount: item === 'speed' ? 500 : 1000 }],
+                prices: [{ label: 'Purchase', amount: item === 'speed' ? 500 : 1000 }],
             }),
         });
 
-        const data = await response.json();
-
-        if (data.success) {
-            alert('Инвойс успешно создан! Проверьте Telegram.');
+        const result = await response.json();
+        if (result.ok) {
+            alert('Инвойс создан. Проверьте Telegram.');
         } else {
-            alert(`Ошибка: ${data.message}`);
+            alert(`Ошибка: ${result.description}`);
         }
     } catch (error) {
-        console.error('Ошибка при создании инвойса:', error);
-        alert('Не удалось создать инвойс.');
+        console.error(error);
+        alert('Ошибка при создании инвойса.');
     }
 }

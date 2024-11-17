@@ -5,31 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Game Terminal</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
 </head>
 <body>
     <div id="loading-screen">
         <h1>Загрузка...</h1>
     </div>
-
     <div id="terminal">
-        <div id="terminal-header">
-            <span class="green-text">Time Game Terminal</span>
-        </div>
-        <div id="terminal-body">
+        <header>
+            <h1>Time Game Terminal</h1>
             <div id="stopwatch">00:00:00</div>
+        </header>
+        <main id="content-section">
+            <!-- Здесь будут динамически изменяемые разделы -->
+            <p>Добро пожаловать в Time Game!</p>
+        </main>
+        <footer>
             <div id="action-buttons">
-                <button id="timeButton" onclick="goTo('time')">Time</button>
-                <button id="upgradeButton" onclick="goTo('upgrade')">Upgrade</button>
-                <button id="earnButton" onclick="goTo('earn')">Earn</button>
-                <button id="boxButton" onclick="goTo('box')">Box</button>
+                <button onclick="goTo('time')">Time</button>
+                <button onclick="goTo('upgrade')">Upgrade</button>
+                <button onclick="goTo('earn')">Earn</button>
+                <button onclick="goTo('box')">Box</button>
             </div>
-        </div>
-        <div id="purchase-section">
-            <p class="green-text">Доступные покупки:</p>
-            <button onclick="createInvoice('speed')">Купить ускорение</button>
-            <button onclick="createInvoice('offline')">Купить оффлайн-прогресс</button>
-        </div>
+        </footer>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>
