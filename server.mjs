@@ -31,3 +31,9 @@ app.post('/web-data', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
 });
+
+
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store');
+    next();
+});
