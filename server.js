@@ -57,3 +57,39 @@ app.get('/api/user/:id', (req, res) => {
 app.listen(PORT, () => {
     console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
+app.post('/api/add-user', async (req, res) => {
+    const { user_id, first_name } = req.body;
+
+    // Проверьте, существует ли пользователь
+    const existingUser = await db.get('SELECT * FROM users WHERE user_id = ?', [user_id]);
+
+    if (!existingUser) {
+        await db.run('INSERT INTO users (user_id, mined_time, stars, time_speed) VALUES (?, 0, 100, 1)', [user_id]);
+        console.log(`Пользователь ${first_name} добавлен`);
+    }
+
+    res.json({ success: true });
+});
+app.post('/api/update-progress', async (req, res) => {
+    const { user_id, mined_time, stars, time_speed } = req.body;
+    await db.run(
+        'UPDATE users SET mined_time = ?, stars = ?, time_speed = ? WHERE user_id = ?',
+        [mined_time, stars, time_speed, user_id]
+    );
+    res.json({ success: true });
+});
+setInterval(() => {
+    fetch('/api/update-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: user.id,
+            mined_time: elapsedTime,
+            stars: stars,
+            time_speed: timeSpeed,
+        }),
+    })
+    .then(response => response.json())
+    .then(data => console.log('Прогресс сохранён:', data))
+    .catch(error => console.error('Ошибка сохранения:', error));
+}, 30000); // каждые 30 секунд

@@ -88,3 +88,26 @@ document.getElementById('boxButton').addEventListener('click', () => {
 document.getElementById('earnButton').addEventListener('click', () => {
     alert("Функция 'Заработать' будет добавлена позже.");
 });
+// Инициализация Telegram Web App
+const tg = window.Telegram.WebApp;
+tg.expand(); // Расширяет Web App на весь экран
+
+// Получение информации о пользователе
+const user = tg.initDataUnsafe?.user || {};
+console.log("Telegram User Info:", user);
+
+// Показ имени пользователя в игре (если нужно)
+const userNameDisplay = document.createElement("div");
+userNameDisplay.textContent = `Привет, ${user.first_name || "игрок"}!`;
+document.body.insertBefore(userNameDisplay, document.body.firstChild);
+fetch('/api/add-user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        user_id: user.id,
+        first_name: user.first_name
+    }),
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Ошибка:', error));
