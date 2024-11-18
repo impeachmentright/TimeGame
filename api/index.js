@@ -1,8 +1,10 @@
-// server.mjs
-import express from 'express';
-import bodyParser from 'body-parser';
-import dotenv from 'dotenv';
-import { MongoClient, ObjectId } from 'mongodb';
+// api/index.js
+const express = require('express');
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+const { MongoClient, ObjectId } = require('mongodb');
+// Подключение вашего бота (убедитесь, что файл bot.js существует)
+const bot = require('../bot');
 
 dotenv.config();
 
@@ -11,18 +13,23 @@ app.use(bodyParser.json());
 
 // Подключение к базе данных
 let db;
-const client = new MongoClient(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(process.env.MONGODB_URI);
 
 client.connect().then(() => {
-  db = client.db('timegame'); // Имя вашей базы данных
-  console.log('Подключено к базе данных');
+  db = client.db('timegame'); // Ваше название базы данных
+  console.log('Connected to the database');
+}).catch((err) => {
+  console.error('Failed to connect to the database', err);
+});
+
+// Маршрут для обработки вебхуков Telegram
+app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
 });
 
 // API для получения или создания пользователя
-app.post('/api/user', async (req, res) => {
+app.post('/user', async (req, res) => {
   const { telegramId } = req.body;
   let user = await db.collection('users').findOne({ telegramId });
 
@@ -50,7 +57,7 @@ app.post('/api/user', async (req, res) => {
 });
 
 // API для обновления времени пользователя
-app.post('/api/updateTime', async (req, res) => {
+app.post('/updateTime', async (req, res) => {
   const { telegramId, time } = req.body;
   await db.collection('users').updateOne(
     { telegramId },
@@ -60,12 +67,12 @@ app.post('/api/updateTime', async (req, res) => {
 });
 
 // API для добавления реферала
-app.post('/api/addReferral', async (req, res) => {
+app.post('/addReferral', async (req, res) => {
   const { telegramId, referralId } = req.body;
 
-  // Проверяем, что реферал не является самим пользователем
+  // Проверяем, что пользователь не рефирует сам себя
   if (telegramId === referralId) {
-    return res.status(400).json({ error: 'Нельзя добавить себя в качестве реферала' });
+    return res.status(400).json({ error: 'Вы не можете реферировать себя' });
   }
 
   const user = await db.collection('users').findOne({ telegramId });
@@ -81,9 +88,10 @@ app.post('/api/addReferral', async (req, res) => {
   res.sendStatus(200);
 });
 
-// Обработка остальных запросов
-app.use(express.static('public'));
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log('Сервер запущен');
+// Обработка других запросов
+app.get('/', (req, res) => {
+  res.send('Сервер работает');
 });
+
+// Экспортируем приложение без вызова app.listen()
+module.exports = app;
