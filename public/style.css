@@ -1,81 +1,77 @@
-/* styles.css */
-
-/* Базовые стили */
+/* Основной стиль */
 body {
     margin: 0;
-    font-family: "Courier New", monospace;
-    background-color: #000;
-    color: #0f0;
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(to bottom, #0d0d2b, #000);
+    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
+    text-align: center;
 }
 
 /* Экран загрузки */
 #loading-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
     text-align: center;
 }
 
-.loading-content h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
+#loading-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    animation: fadeIn 2s;
 }
 
-.loading-content p {
-    font-size: 1.2rem;
-    margin-bottom: 2rem;
+#loading-text {
+    font-size: 16px;
+    margin-bottom: 10px;
+    animation: fadeIn 3s;
 }
 
-.loading-bar {
-    width: 300px;
-    height: 10px;
-    background-color: #222;
-    border: 1px solid #0f0;
-    position: relative;
-    overflow: hidden;
-    margin: 0 auto;
-}
-
-.loading-bar .progress {
-    width: 0%;
-    height: 100%;
-    background-color: #0f0;
-    animation: load 2s linear forwards;
-}
-
-@keyframes load {
-    from {
-        width: 0%;
-    }
-    to {
-        width: 100%;
-    }
+#loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top: 5px solid white;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
 }
 
 /* Основной интерфейс */
 #main-interface {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
     text-align: center;
 }
 
-header h1 {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-}
-
-#stopwatch-container {
-    background-color: #111;
-    border: 2px solid #0f0;
-    padding: 1rem;
-    border-radius: 8px;
-}
-
 #stopwatch {
-    font-size: 2.5rem;
+    font-size: 36px;
     font-weight: bold;
-    margin-top: 0.5rem;
+}
+
+/* Анимации */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
