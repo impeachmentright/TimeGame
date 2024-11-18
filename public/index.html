@@ -4,9 +4,92 @@
 <head>
   <meta charset="UTF-8">
   <title>TimeGame</title>
+  <style>
+    /* Добавьте здесь ваши стили */
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    #timeDisplay {
+      font-size: 48px;
+      margin-top: 20px;
+    }
+    #startButton, #stopButton, #referralButton {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 10px;
+    }
+  </style>
 </head>
 <body>
   <h1>Добро пожаловать в TimeGame</h1>
-  <p>Сервер работает успешно.</p>
+  <p>Ваш сервер работает успешно.</p>
+
+  <div id="app">
+    <div id="timeDisplay">00:00:00</div>
+    <button id="startButton">Начать</button>
+    <button id="stopButton" disabled>Остановить</button>
+    <br>
+    <button id="referralButton">Получить реферальную ссылку</button>
+  </div>
+
+  <script>
+    // Добавьте здесь ваш JavaScript-код
+    let startTime;
+    let elapsedTime = 0;
+    let timerInterval;
+    const timeDisplay = document.getElementById('timeDisplay');
+    const startButton = document.getElementById('startButton');
+    const stopButton = document.getElementById('stopButton');
+    const referralButton = document.getElementById('referralButton');
+
+    function updateTime() {
+      elapsedTime = Date.now() - startTime;
+      const totalSeconds = Math.floor(elapsedTime / 1000);
+      const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+      const minutes = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      timeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    startButton.addEventListener('click', () => {
+      startTime = Date.now() - elapsedTime;
+      timerInterval = setInterval(updateTime, 1000);
+      startButton.disabled = true;
+      stopButton.disabled = false;
+    });
+
+    stopButton.addEventListener('click', () => {
+      clearInterval(timerInterval);
+      startButton.disabled = false;
+      stopButton.disabled = true;
+
+      // Отправляем время на сервер
+      fetch('/api/updateTime', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegramId: '123456789', // Здесь вы должны использовать реальный telegramId пользователя
+          time: elapsedTime
+        })
+      })
+      .then(response => {
+        if (response.ok) {
+          alert('Ваше время сохранено!');
+        } else {
+          alert('Произошла ошибка при сохранении времени.');
+        }
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+        alert('Произошла ошибка при соединении с сервером.');
+      });
+    });
+
+    referralButton.addEventListener('click', () => {
+      const referralLink = `${window.location.origin}?referralId=123456789`; // Замените на реальный telegramId пользователя
+      prompt('Ваша реферальная ссылка:', referralLink);
+    });
+  </script>
 </body>
 </html>
