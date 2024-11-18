@@ -4,12 +4,12 @@ tg.expand(); // Расширяет приложение на весь экран
 
 // Когда документ загружен
 document.addEventListener('DOMContentLoaded', function() {
+    // Уведомляем Telegram, что приложение готово
+    tg.ready();
+
     // Скрываем загрузочный экран и показываем приложение
     document.getElementById('loading-screen').style.display = 'none';
     document.getElementById('app-container').style.display = 'flex';
-
-    // Уведомляем Telegram, что приложение готово
-    tg.ready();
 
     // Переменные секундомера
     let stopwatchInterval;
@@ -108,4 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
             resetMiningTimeout();
         }
     });
+
+    // Логирование для отладки
+    console.log('Приложение загружено и готово к работе');
 });

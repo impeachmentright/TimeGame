@@ -18,6 +18,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 1000;
 }
 
 #loading-screen h1 {
@@ -30,7 +31,7 @@ body {
     display: none; /* Скрыт до загрузки */
     flex-direction: column;
     justify-content: space-between;
-    height: 100vh;
+    min-height: 100vh;
 }
 
 /* Экран */
@@ -90,4 +91,5 @@ body {
     position: fixed;
     bottom: 0;
     width: 100%;
+    z-index: 999;
 }
