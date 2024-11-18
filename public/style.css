@@ -25,10 +25,14 @@ body {
   
   #main-screen, #upgrade-screen, #friends-screen, #earn-screen {
     flex: 1;
-    display: flex;
+    display: none; /* По умолчанию скрываем все экраны */
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+  
+  #main-screen {
+    display: flex; /* Отображаем главный экран после загрузки */
   }
   
   #stopwatch {

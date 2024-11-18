@@ -26,7 +26,7 @@ window.onload = () => {
     seconds += miningSpeed;
     const hrs = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
+    const secs = Math.floor(seconds % 60);
   
     stopwatch.textContent = `${hrs}:${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}`;
   }
@@ -74,82 +74,94 @@ window.onload = () => {
     document.getElementById('friends-screen').style.display = 'none';
     document.getElementById('earn-screen').style.display = 'none';
   }
-  // Upgrade variables
-let upgradeLevels = [1.15, 1.3, 1.5, 2, 4];
-let currentUpgradeIndex = 0;
-
-// Elements
-const currentSpeedDisplay = document.getElementById('current-speed');
-const upgradeButton = document.getElementById('upgrade-button');
-const backFromUpgradeButton = document.getElementById('back-from-upgrade');
-
-// Update current speed display
-function updateCurrentSpeedDisplay() {
-  currentSpeedDisplay.textContent = miningSpeed.toFixed(2);
-}
-
-// Upgrade button event listener
-upgradeButton.addEventListener('click', () => {
-  if (currentUpgradeIndex < upgradeLevels.length) {
-    // Here you should implement the cost deduction logic
-    // For now, we'll just upgrade without cost
-    miningSpeed = upgradeLevels[currentUpgradeIndex];
-    currentUpgradeIndex++;
-    updateCurrentSpeedDisplay();
-  } else {
-    alert('Maximum upgrade level reached.');
+  
+  // Upgrade functionality
+  let upgradeLevels = [1.15, 1.3, 1.5, 2, 4];
+  let currentUpgradeIndex = 0;
+  
+  // Elements for upgrade
+  const currentSpeedDisplay = document.getElementById('current-speed');
+  const upgradeButton = document.getElementById('upgrade-button');
+  const backFromUpgradeButton = document.getElementById('back-from-upgrade');
+  
+  // Update current speed display
+  function updateCurrentSpeedDisplay() {
+    currentSpeedDisplay.textContent = miningSpeed.toFixed(2);
   }
-});
-
-// Back button event listener
-backFromUpgradeButton.addEventListener('click', showMainScreen);
-// Elements
-const referralLinkInput = document.getElementById('referral-link');
-const copyLinkButton = document.getElementById('copy-link-button');
-const backFromFriendsButton = document.getElementById('back-from-friends');
-
-// Generate referral link (replace with actual logic)
-function generateReferralLink() {
-  const userId = 'USER_ID'; // Replace with actual user ID
-  return `https://t.me/YourBotName?start=${userId}`;
-}
-
-// Show referral link when screen is displayed
-function showFriendsScreen() {
-  hideAllScreens();
-  document.getElementById('friends-screen').style.display = 'flex';
-  referralLinkInput.value = generateReferralLink();
-}
-
-// Copy referral link to clipboard
-copyLinkButton.addEventListener('click', () => {
-  referralLinkInput.select();
-  document.execCommand('copy');
-  alert('Referral link copied to clipboard.');
-});
-
-// Back button event listener
-backFromFriendsButton.addEventListener('click', showMainScreen);
-// Elements
-const backFromEarnButton = document.getElementById('back-from-earn');
-const taskButtons = document.querySelectorAll('.task-button');
-
-// Back button event listener
-backFromEarnButton.addEventListener('click', showMainScreen);
-
-// Task buttons event listeners
-taskButtons.forEach(button => {
-  button.addEventListener('click', (e) => {
-    const task = e.target.getAttribute('data-task');
-    // Implement task logic based on the task type
-    if (task === 'subscribe') {
-      // Open Telegram channel link
-      window.open('https://t.me/YourChannelName', '_blank');
-      // After verification, reward the user
-    } else if (task === 'watch-ad') {
-      // Show an ad (you'll need an ad provider)
-      // After the ad, reward the user
-    }
-    alert('Task completed! You have earned rewards.');
+  
+  // Upgrade button event listener
+  if (upgradeButton) {
+    upgradeButton.addEventListener('click', () => {
+      if (currentUpgradeIndex < upgradeLevels.length) {
+        // Здесь вы должны реализовать логику вычитания стоимости
+        miningSpeed = upgradeLevels[currentUpgradeIndex];
+        currentUpgradeIndex++;
+        updateCurrentSpeedDisplay();
+      } else {
+        alert('Maximum upgrade level reached.');
+      }
+    });
+  }
+  
+  // Back button event listener
+  if (backFromUpgradeButton) {
+    backFromUpgradeButton.addEventListener('click', showMainScreen);
+  }
+  
+  // Friends functionality
+  const referralLinkInput = document.getElementById('referral-link');
+  const copyLinkButton = document.getElementById('copy-link-button');
+  const backFromFriendsButton = document.getElementById('back-from-friends');
+  
+  // Generate referral link (replace with actual logic)
+  function generateReferralLink() {
+    const userId = 'USER_ID'; // Replace with actual user ID
+    return `https://t.me/YourBotName?start=${userId}`;
+  }
+  
+  // Show referral link when screen is displayed
+  function showFriendsScreen() {
+    hideAllScreens();
+    document.getElementById('friends-screen').style.display = 'flex';
+    referralLinkInput.value = generateReferralLink();
+  }
+  
+  // Copy referral link to clipboard
+  if (copyLinkButton) {
+    copyLinkButton.addEventListener('click', () => {
+      referralLinkInput.select();
+      document.execCommand('copy');
+      alert('Referral link copied to clipboard.');
+    });
+  }
+  
+  // Back button event listener
+  if (backFromFriendsButton) {
+    backFromFriendsButton.addEventListener('click', showMainScreen);
+  }
+  
+  // Earn functionality
+  const backFromEarnButton = document.getElementById('back-from-earn');
+  const taskButtons = document.querySelectorAll('.task-button');
+  
+  // Back button event listener
+  if (backFromEarnButton) {
+    backFromEarnButton.addEventListener('click', showMainScreen);
+  }
+  
+  // Task buttons event listeners
+  taskButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      const task = e.target.getAttribute('data-task');
+      // Implement task logic based on the task type
+      if (task === 'subscribe') {
+        // Open Telegram channel link
+        window.open('https://t.me/YourChannelName', '_blank');
+        // After verification, reward the user
+      } else if (task === 'watch-ad') {
+        // Show an ad (you'll need an ad provider)
+        // After the ad, reward the user
+      }
+      alert('Task completed! You have earned rewards.');
+    });
   });
-});
