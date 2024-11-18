@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 app.use(bodyParser.json());
 
-// Connect to the database
+// Подключение к базе данных
 let db;
 const client = new MongoClient(process.env.MONGODB_URI, {
   useNewUrlParser: true,
@@ -17,11 +17,11 @@ const client = new MongoClient(process.env.MONGODB_URI, {
 });
 
 client.connect().then(() => {
-  db = client.db('timegame'); // Your database name
-  console.log('Connected to the database');
+  db = client.db('timegame'); // Имя вашей базы данных
+  console.log('Подключено к базе данных');
 });
 
-// API to get or create a user
+// API для получения или создания пользователя
 app.post('/api/user', async (req, res) => {
   const { telegramId } = req.body;
   let user = await db.collection('users').findOne({ telegramId });
@@ -35,7 +35,7 @@ app.post('/api/user', async (req, res) => {
     };
     await db.collection('users').insertOne(user);
   } else {
-    // Check if 12 hours have passed since last activity
+    // Проверяем, прошло ли 12 часов с последней активности
     const hoursDiff = (new Date() - new Date(user.lastActive)) / 36e5;
     if (hoursDiff >= 12) {
       user.time = 0;
@@ -49,7 +49,7 @@ app.post('/api/user', async (req, res) => {
   res.json(user);
 });
 
-// API to update user's time
+// API для обновления времени пользователя
 app.post('/api/updateTime', async (req, res) => {
   const { telegramId, time } = req.body;
   await db.collection('users').updateOne(
@@ -59,13 +59,13 @@ app.post('/api/updateTime', async (req, res) => {
   res.sendStatus(200);
 });
 
-// API to add a referral
+// API для добавления реферала
 app.post('/api/addReferral', async (req, res) => {
   const { telegramId, referralId } = req.body;
 
-  // Ensure the referral is not the user themselves
+  // Проверяем, что реферал не является самим пользователем
   if (telegramId === referralId) {
-    return res.status(400).json({ error: 'You cannot refer yourself' });
+    return res.status(400).json({ error: 'Нельзя добавить себя в качестве реферала' });
   }
 
   const user = await db.collection('users').findOne({ telegramId });
@@ -81,9 +81,9 @@ app.post('/api/addReferral', async (req, res) => {
   res.sendStatus(200);
 });
 
-// Serve static files from 'public' directory
+// Обработка остальных запросов
 app.use(express.static('public'));
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log('Server is running');
+  console.log('Сервер запущен');
 });
