@@ -7,32 +7,38 @@ body {
   }
   
   #loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black;
     display: flex;
-    height: 100vh;
     justify-content: center;
     align-items: center;
   }
   
   #loading-screen h1 {
     font-size: 3em;
+    color: white;
   }
   
   #app-container {
-    display: flex;
+    display: none;
     flex-direction: column;
-    height: 100vh;
+    height: calc(100vh - 60px); /* Вычитаем высоту навигации */
   }
   
   #main-screen, #upgrade-screen, #friends-screen, #earn-screen {
     flex: 1;
-    display: none; /* По умолчанию скрываем все экраны */
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
   
   #main-screen {
-    display: flex; /* Отображаем главный экран после загрузки */
+    display: flex;
   }
   
   #stopwatch {
@@ -58,6 +64,10 @@ body {
     display: flex;
     justify-content: space-around;
     background-color: #222;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
   }
   
   #navigation button {
