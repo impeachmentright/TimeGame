@@ -3,44 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>$TIME</title>
+    <!-- Подключаем SDK Telegram Web Apps -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Подключаем ваш CSS-файл -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Загрузочный экран -->
     <div id="loading-screen">
         <h1>$TIME</h1>
     </div>
 
-    <!-- App Container -->
-    <div id="app-container">
-        <!-- Main Screen -->
+    <!-- Контейнер приложения -->
+    <div id="app-container" style="display: none;">
+        <!-- Главный экран -->
         <div id="main-screen" class="screen">
             <div id="stopwatch">00:00:00</div>
             <button id="start-button" class="green-button">Start</button>
         </div>
 
-        <!-- Upgrade Screen -->
-        <div id="upgrade-screen" class="screen">
-            <!-- Content for Upgrade Screen -->
-            <h2>Upgrade</h2>
-            <!-- Upgrade options will go here -->
-        </div>
-
-        <!-- Friends Screen -->
-        <div id="friends-screen" class="screen">
-            <!-- Content for Friends Screen -->
-            <h2>Friends</h2>
-            <!-- Referral links and rewards will go here -->
-        </div>
-
-        <!-- Earn Screen -->
-        <div id="earn-screen" class="screen">
-            <!-- Content for Earn Screen -->
-            <h2>Earn</h2>
-            <!-- Tasks and rewards will go here -->
-        </div>
-
-        <!-- Navigation -->
+        <!-- Навигация -->
         <div id="navigation">
             <button id="mine-button" class="nav-button active">Mine</button>
             <button id="upgrade-button" class="nav-button">Upgrade</button>
@@ -49,6 +31,7 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <!-- Подключаем ваш JavaScript-файл -->
+    <script src="script.js"></script>
 </body>
 </html>

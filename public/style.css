@@ -1,4 +1,4 @@
-/* General Styles */
+/* Общие стили */
 body {
     margin: 0;
     background-color: black;
@@ -7,7 +7,7 @@ body {
     text-align: center;
 }
 
-/* Loading Screen */
+/* Загрузочный экран */
 #loading-screen {
     position: fixed;
     top: 0;
@@ -25,15 +25,15 @@ body {
     color: white;
 }
 
-/* App Container */
+/* Контейнер приложения */
 #app-container {
-    display: none; /* Hidden until loading is complete */
+    display: none; /* Скрыт до загрузки */
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
 }
 
-/* Screens */
+/* Экран */
 .screen {
     flex: 1;
     display: none;
@@ -42,18 +42,18 @@ body {
     flex-direction: column;
 }
 
-/* Main Screen */
+/* Главный экран */
 #main-screen {
-    display: flex; /* Show main screen by default */
+    display: flex; /* Отображаем главный экран по умолчанию */
 }
 
-/* Stopwatch */
+/* Секундомер */
 #stopwatch {
     font-size: 3em;
     margin-bottom: 20px;
 }
 
-/* Buttons */
+/* Кнопки */
 .green-button {
     background-color: green;
     color: white;
@@ -83,28 +83,11 @@ body {
     text-decoration: underline;
 }
 
-/* Navigation Bar */
+/* Навигационная панель */
 #navigation {
     display: flex;
     background-color: black;
     position: fixed;
     bottom: 0;
     width: 100%;
-}
-
-/* Responsive Styles */
-@media (max-width: 600px) {
-    #stopwatch {
-        font-size: 2em;
-    }
-
-    .green-button {
-        padding: 10px 20px;
-        font-size: 1em;
-    }
-
-    .nav-button {
-        font-size: 0.8em;
-        padding: 10px;
-    }
 }
