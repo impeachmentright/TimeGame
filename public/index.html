@@ -3,31 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Game Terminal</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Time Game</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Экран загрузки -->
     <div id="loading-screen">
-        <h1>Загрузка...</h1>
+        <div class="loading-content">
+            <h1>Time Game Terminal</h1>
+            <p>Загрузка...</p>
+            <div class="loading-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
     </div>
-    <div id="terminal">
+
+    <!-- Основной интерфейс -->
+    <div id="main-interface" style="display: none;">
         <header>
             <h1>Time Game Terminal</h1>
-            <div id="stopwatch">00:00:00</div>
         </header>
-        <main id="content-section">
-            <!-- Здесь будут динамически изменяемые разделы -->
-            <p>Добро пожаловать в Time Game!</p>
-        </main>
-        <footer>
-            <div id="action-buttons">
-                <button onclick="goTo('time')">Time</button>
-                <button onclick="goTo('upgrade')">Upgrade</button>
-                <button onclick="goTo('earn')">Earn</button>
-                <button onclick="goTo('box')">Box</button>
+        <main>
+            <div id="stopwatch-container">
+                <p>Ваше время:</p>
+                <div id="stopwatch">00:00:00</div>
             </div>
-        </footer>
+        </main>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
