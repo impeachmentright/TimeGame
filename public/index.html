@@ -1,34 +1,72 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Time Game</title>
+  <title>$TIME</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <!-- Экран загрузки -->
+  <!-- Loading Screen -->
   <div id="loading-screen">
-    <p class="loading-text">mine $TIME</p>
+    <h1>$TIME</h1>
   </div>
 
-  <!-- Основное приложение -->
+  <!-- App Container -->
   <div id="app-container" style="display: none;">
-    <!-- Главный экран -->
-    <header>
-      <h1 id="app-title">Time Game</h1>
-    </header>
-    <main>
-      <section id="time-section">
-        <h2>Время: <span id="stopwatch">0:00:00</span></h2>
-      </section>
-      <nav id="buttons-container">
-        <button id="time-btn">Time</button>
-        <button id="upgrade-btn">Upgrade</button>
-        <button id="earn-btn">Earn</button>
-        <button id="box-btn">Box</button>
-      </nav>
-    </main>
+    <!-- Main Screen -->
+    <div id="main-screen">
+      <div id="stopwatch">0:00:00</div>
+      <button id="start-button" class="green-button">Start</button>
+    </div>
+
+    <!-- Upgrade Screen -->
+    <div id="upgrade-screen" style="display: none;">
+      <!-- Upgrade content will go here -->
+    <!-- Upgrade Screen -->
+<div id="upgrade-screen" style="display: none;">
+    <h2>Upgrade Mining Speed</h2>
+    <p>Current Speed: x<span id="current-speed">1</span></p>
+    <button id="upgrade-button">Upgrade</button>
+    <button id="back-from-upgrade">Back</button>
+  </div>
+
+    <!-- Friends Screen -->
+    <div id="friends-screen" style="display: none;">
+    <!-- Friends Screen -->
+<div id="friends-screen" style="display: none;">
+    <h2>Invite Friends</h2>
+    <p>Share your referral link:</p>
+    <input type="text" id="referral-link" readonly>
+    <button id="copy-link-button">Copy Link</button>
+    <button id="back-from-friends">Back</button>
+  </div>
+    </div>
+
+    <!-- Earn Screen -->
+    <div id="earn-screen" style="display: none;">
+   <!-- Earn Screen -->
+<div id="earn-screen" style="display: none;">
+    <h2>Earn Rewards</h2>
+    <ul id="tasks-list">
+      <li>
+        <button class="task-button" data-task="subscribe">Subscribe to our channel</button>
+      </li>
+      <li>
+        <button class="task-button" data-task="watch-ad">Watch an ad</button>
+      </li>
+      <!-- Add more tasks as needed -->
+    </ul>
+    <button id="back-from-earn">Back</button>
+  </div>
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div id="navigation">
+      <button id="mine-btn">Mine</button>
+      <button id="upgrade-btn">Upgrade</button>
+      <button id="friends-btn">Friends</button>
+      <button id="earn-btn">Earn</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
