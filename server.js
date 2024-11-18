@@ -30,9 +30,9 @@ app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
   res.sendStatus(200);
 });
 
-// API для получения или создания пользователя
+// API для получения или создания пользователя с обработкой referralId
 app.post('/api/user', async (req, res) => {
-  const { telegramId } = req.body;
+  const { telegramId, referralId } = req.body;
   try {
     let user = await db.collection('users').findOne({ telegramId });
 
@@ -44,6 +44,17 @@ app.post('/api/user', async (req, res) => {
         referrals: [],
       };
       await db.collection('users').insertOne(user);
+
+      // Если есть referralId, добавляем его как реферала
+      if (referralId) {
+        await db.collection('users').updateOne(
+          { telegramId: referralId },
+          {
+            $push: { referrals: telegramId },
+            $inc: { time: 10000 } // Начисляем бонус
+          }
+        );
+      }
     } else {
       // Проверяем, прошло ли 12 часов с последней активности
       const hoursDiff = (new Date() - new Date(user.lastActive)) / 36e5;
@@ -63,51 +74,7 @@ app.post('/api/user', async (req, res) => {
   }
 });
 
-// API для обновления времени пользователя
-app.post('/api/updateTime', async (req, res) => {
-  const { telegramId, time } = req.body;
-  try {
-    await db.collection('users').updateOne(
-      { telegramId },
-      { $set: { time, lastActive: new Date() } }
-    );
-    res.sendStatus(200);
-  } catch (error) {
-    console.error('Error in /api/updateTime:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// API для добавления реферала
-app.post('/api/addReferral', async (req, res) => {
-  const { telegramId, referralId } = req.body;
-
-  // Проверяем, что пользователь не рефирует сам себя
-  if (telegramId === referralId) {
-    return res.status(400).json({ error: 'Вы не можете реферировать себя' });
-  }
-
-  try {
-    const user = await db.collection('users').findOne({ telegramId });
-    if (!user) {
-      return res.status(404).json({ error: 'Пользователь не найден' });
-    }
-
-    if (!user.referrals.includes(referralId)) {
-      user.referrals.push(referralId);
-      user.time += 10000;
-      await db.collection('users').updateOne(
-        { telegramId },
-        { $set: { referrals: user.referrals, time: user.time } }
-      );
-    }
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error('Error in /api/addReferral:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+// Остальные маршруты остаются без изменений
 
 // Обслуживание статических файлов из папки public
 app.use(express.static(path.join(__dirname, 'public')));

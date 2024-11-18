@@ -1,14 +1,14 @@
-<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <title>TimeGame</title>
   <style>
-    /* Добавьте здесь ваши стили */
+    /* Стили для вашего интерфейса */
     body {
       font-family: Arial, sans-serif;
       text-align: center;
+      background-color: #f0f0f0;
     }
     #timeDisplay {
       font-size: 48px;
@@ -18,23 +18,65 @@
       padding: 10px 20px;
       font-size: 18px;
       margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #startButton {
+      background-color: #28a745;
+      color: #fff;
+    }
+    #stopButton {
+      background-color: #dc3545;
+      color: #fff;
+    }
+    #referralButton {
+      background-color: #007bff;
+      color: #fff;
+    }
+    /* Новые стили для реферального раздела */
+    #referralOptions {
+      display: none;
+      margin-top: 20px;
+    }
+    #referralLink {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    #copyButton, #inviteButton {
+      padding: 8px 16px;
+      font-size: 16px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #copyButton {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+    #inviteButton {
+      background-color: #ffc107;
+      color: #fff;
     }
   </style>
 </head>
 <body>
   <h1>Добро пожаловать в TimeGame</h1>
-  <p>Ваш сервер работает успешно.</p>
-
   <div id="app">
     <div id="timeDisplay">00:00:00</div>
     <button id="startButton">Начать</button>
     <button id="stopButton" disabled>Остановить</button>
     <br>
-    <button id="referralButton">Получить реферальную ссылку</button>
+    <button id="referralButton">Рефералы</button>
+    <div id="referralOptions">
+      <p id="referralLink"></p>
+      <button id="copyButton">Скопировать ссылку</button>
+      <button id="inviteButton">Отправить приглашения</button>
+    </div>
   </div>
 
   <script>
-    // Добавьте здесь ваш JavaScript-код
     let startTime;
     let elapsedTime = 0;
     let timerInterval;
@@ -42,6 +84,13 @@
     const startButton = document.getElementById('startButton');
     const stopButton = document.getElementById('stopButton');
     const referralButton = document.getElementById('referralButton');
+    const referralOptions = document.getElementById('referralOptions');
+    const referralLinkElem = document.getElementById('referralLink');
+    const copyButton = document.getElementById('copyButton');
+    const inviteButton = document.getElementById('inviteButton');
+
+    // Здесь замените 'YOUR_TELEGRAM_ID' на реальный telegramId пользователя
+    const telegramId = 'YOUR_TELEGRAM_ID';
 
     function updateTime() {
       elapsedTime = Date.now() - startTime;
@@ -69,7 +118,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          telegramId: '123456789', // Здесь вы должны использовать реальный telegramId пользователя
+          telegramId: telegramId,
           time: elapsedTime
         })
       })
@@ -87,8 +136,27 @@
     });
 
     referralButton.addEventListener('click', () => {
-      const referralLink = `${window.location.origin}?referralId=123456789`; // Замените на реальный telegramId пользователя
-      prompt('Ваша реферальная ссылка:', referralLink);
+      referralOptions.style.display = referralOptions.style.display === 'none' ? 'block' : 'none';
+      // Генерируем реферальную ссылку
+      const referralLink = `${window.location.origin}?referralId=${telegramId}`;
+      referralLinkElem.textContent = `Ваша реферальная ссылка: ${referralLink}`;
+    });
+
+    copyButton.addEventListener('click', () => {
+      // Копируем реферальную ссылку в буфер обмена
+      const referralLink = `${window.location.origin}?referralId=${telegramId}`;
+      navigator.clipboard.writeText(referralLink).then(() => {
+        alert('Реферальная ссылка скопирована в буфер обмена!');
+      }, () => {
+        alert('Не удалось скопировать ссылку.');
+      });
+    });
+
+    inviteButton.addEventListener('click', () => {
+      // Здесь вы можете реализовать функционал отправки приглашений
+      // Например, открыть окно для выбора контактов или поделиться ссылкой через соцсети
+      const referralLink = `${window.location.origin}?referralId=${telegramId}`;
+      alert(`Отправьте эту ссылку вашим друзьям: ${referralLink}`);
     });
   </script>
 </body>
