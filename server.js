@@ -1,20 +1,20 @@
 // server.js
 const express = require('express');
 const bodyParser = require('body-parser');
-const bot = require('./bot'); // Подключаем ваш файл бота
+const bot = require('./bot'); // Connect your bot file
 
 const app = express();
 app.use(bodyParser.json());
 
-// Маршрут для обработки вебхуков от Telegram
+// Route for handling Telegram webhooks
 app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
   bot.processUpdate(req.body);
   res.sendStatus(200);
 });
 
-// Обработка остальных запросов (опционально)
+// Optional: Handling other requests
 app.get('/', (req, res) => {
-  res.send('Сервер работает');
+  res.send('Server is running');
 });
 
 module.exports = app;
