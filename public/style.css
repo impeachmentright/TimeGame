@@ -1,3 +1,5 @@
+/* style.css */
+
 body {
     margin: 0;
     background-color: black;
@@ -16,6 +18,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    z-index: 9999;
   }
   
   #loading-screen h1 {
@@ -24,25 +27,26 @@ body {
   }
   
   #app-container {
-    display: none;
+    display: none; /* Hidden until loading is complete */
+    height: 100vh;
+    display: flex;
     flex-direction: column;
-    height: calc(100vh - 60px); /* Вычитаем высоту навигации */
   }
   
-  #main-screen, #upgrade-screen, #friends-screen, #earn-screen {
+  .screen {
     flex: 1;
-    display: none;
+    display: none; /* All screens are hidden by default */
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
   
   #main-screen {
-    display: flex;
+    display: flex; /* Show the main screen by default */
   }
   
   #stopwatch {
-    font-size: 2em;
+    font-size: 3em;
     margin-bottom: 20px;
   }
   
@@ -51,13 +55,19 @@ body {
     color: white;
     border: none;
     padding: 15px 30px;
-    font-size: 1em;
+    font-size: 1.5em;
     cursor: pointer;
+    border-radius: 5px;
   }
   
   .green-button:disabled {
     background-color: gray;
     cursor: not-allowed;
+  }
+  
+  .back-button {
+    margin-top: 20px;
+    padding: 10px 20px;
   }
   
   #navigation {
@@ -82,4 +92,27 @@ body {
   
   #navigation button:hover {
     background-color: #444;
+  }
+  
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    font-size: 1em;
+    margin-bottom: 10px;
+  }
+  
+  @media (max-width: 600px) {
+    #stopwatch {
+      font-size: 2em;
+    }
+  
+    .green-button {
+      padding: 10px 20px;
+      font-size: 1em;
+    }
+  
+    #navigation button {
+      font-size: 0.8em;
+      padding: 10px;
+    }
   }

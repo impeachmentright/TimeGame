@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>$TIME</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,32 +13,32 @@
   </div>
 
   <!-- App Container -->
-  <div id="app-container" style="display: none;">
+  <div id="app-container">
     <!-- Main Screen -->
-    <div id="main-screen">
+    <div id="main-screen" class="screen">
       <div id="stopwatch">0:00:00</div>
       <button id="start-button" class="green-button">Start</button>
     </div>
 
     <!-- Upgrade Screen -->
-    <div id="upgrade-screen" style="display: none;">
+    <div id="upgrade-screen" class="screen">
       <h2>Upgrade Mining Speed</h2>
       <p>Current Speed: x<span id="current-speed">1</span></p>
       <button id="upgrade-button">Upgrade</button>
-      <button id="back-from-upgrade">Back</button>
+      <button id="back-from-upgrade" class="back-button">Back</button>
     </div>
 
     <!-- Friends Screen -->
-    <div id="friends-screen" style="display: none;">
+    <div id="friends-screen" class="screen">
       <h2>Invite Friends</h2>
       <p>Share your referral link:</p>
       <input type="text" id="referral-link" readonly>
       <button id="copy-link-button">Copy Link</button>
-      <button id="back-from-friends">Back</button>
+      <button id="back-from-friends" class="back-button">Back</button>
     </div>
 
     <!-- Earn Screen -->
-    <div id="earn-screen" style="display: none;">
+    <div id="earn-screen" class="screen">
       <h2>Earn Rewards</h2>
       <ul id="tasks-list">
         <li>
@@ -46,17 +47,18 @@
         <li>
           <button class="task-button" data-task="watch-ad">Watch an ad</button>
         </li>
+        <!-- Add more tasks as needed -->
       </ul>
-      <button id="back-from-earn">Back</button>
+      <button id="back-from-earn" class="back-button">Back</button>
     </div>
-  </div>
 
-  <!-- Navigation Buttons -->
-  <div id="navigation">
-    <button id="mine-btn">Mine</button>
-    <button id="upgrade-btn">Upgrade</button>
-    <button id="friends-btn">Friends</button>
-    <button id="earn-btn">Earn</button>
+    <!-- Navigation Buttons -->
+    <div id="navigation">
+      <button id="mine-btn">Mine</button>
+      <button id="upgrade-btn">Upgrade</button>
+      <button id="friends-btn">Friends</button>
+      <button id="earn-btn">Earn</button>
+    </div>
   </div>
 
   <script src="script.js"></script>

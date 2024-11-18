@@ -8,7 +8,7 @@ window.onload = () => {
     // Hide loading screen after 3 seconds
     setTimeout(() => {
       loadingScreen.style.display = 'none';
-      appContainer.style.display = 'block';
+      appContainer.style.display = 'flex';
     }, 3000);
   };
   
@@ -35,7 +35,7 @@ window.onload = () => {
   if (startButton) {
     startButton.addEventListener("click", () => {
       if (!miningInterval) {
-        miningInterval = setInterval(updateStopwatch, 1000);
+        miningInterval = setInterval(updateStopwatch, 1000); // Pass function reference
         startButton.disabled = true;
         startButton.classList.remove('green-button');
         startButton.classList.add('gray-button');
@@ -71,10 +71,10 @@ window.onload = () => {
   }
   
   function hideAllScreens() {
-    document.getElementById('main-screen').style.display = 'none';
-    document.getElementById('upgrade-screen').style.display = 'none';
-    document.getElementById('friends-screen').style.display = 'none';
-    document.getElementById('earn-screen').style.display = 'none';
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => {
+      screen.style.display = 'none';
+    });
   }
   
   // Upgrade functionality
@@ -95,7 +95,7 @@ window.onload = () => {
   if (upgradeButton) {
     upgradeButton.addEventListener('click', () => {
       if (currentUpgradeIndex < upgradeLevels.length) {
-        // Здесь вы должны реализовать логику вычитания стоимости
+        // Implement cost deduction logic here
         miningSpeed = upgradeLevels[currentUpgradeIndex];
         currentUpgradeIndex++;
         updateCurrentSpeedDisplay();
@@ -132,6 +132,7 @@ window.onload = () => {
   if (copyLinkButton) {
     copyLinkButton.addEventListener('click', () => {
       referralLinkInput.select();
+      referralLinkInput.setSelectionRange(0, 99999); // For mobile devices
       document.execCommand('copy');
       alert('Referral link copied to clipboard.');
     });
