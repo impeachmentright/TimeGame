@@ -1,40 +1,22 @@
 // bot.js
 const TelegramBot = require('node-telegram-bot-api');
+const dotenv = require('dotenv');
 
-// Получаем токен бота из переменных окружения
+dotenv.config();
+
 const token = process.env.TELEGRAM_BOT_TOKEN;
 
-// URL вашего веб-приложения
-const webAppUrl = 'https://time-game-snowy.vercel.app/; // Замените на ваш URL
-
-// Создаем бота с использованием вебхуков
-const bot = new TelegramBot(token, {
-  webHook: {
-    port: process.env.PORT || 3000,
-  },
-});
+// Создаем бота в режиме вебхуков
+const bot = new TelegramBot(token, { webHook: true });
 
 // Устанавливаем вебхук
-const webhookUrl = process.env.WEBHOOK_URL || 'https://your-vercel-app.vercel.app/api/bot'; // Замените на ваш URL и путь
-bot.setWebHook(`${webhookUrl}/bot${token}`);
+bot.setWebHook(`${process.env.SERVER_URL}/bot${token}`);
 
-// Обрабатываем команду /start
-bot.onText(/\/start/, (msg) => {
+// Обработка входящих сообщений
+bot.on('message', (msg) => {
   const chatId = msg.chat.id;
-
-  bot
-    .sendMessage(chatId, 'Нажмите кнопку ниже, чтобы открыть приложение.', {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: 'Открыть $TIME', web_app: { url: webAppUrl } }],
-        ],
-      },
-    })
-    .catch((error) => {
-      if (error.response && error.response.statusCode === 403) {
-        console.log(`Пользователь с chat_id ${chatId} заблокировал бота.`);
-      } else {
-        console.error('Ошибка при отправке сообщения:', error);
-      }
-    });
+  // Отправляем ответное сообщение
+  bot.sendMessage(chatId, 'Ваше сообщение получено');
 });
+
+module.exports = bot;
