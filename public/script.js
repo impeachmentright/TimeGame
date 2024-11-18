@@ -1,85 +1,106 @@
-// script.js
-
-window.onload = () => {
-    const loadingScreen = document.getElementById('loading-screen');
-    const appContainer = document.getElementById('app-container');
-
-    setTimeout(() => {
-        loadingScreen.style.display = 'none';
-        appContainer.style.display = 'flex';
-    }, 3000);
+// Wait for the window to load
+window.onload = function() {
+    // Hide the loading screen after a short delay
+    setTimeout(function() {
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('app-container').style.display = 'flex';
+    }, 2000); // 2-second delay
 };
 
-// Переменные
-let seconds = 0;
-let miningInterval = null;
-let miningSpeed = 1;
+// Stopwatch variables
+let stopwatchInterval;
+let elapsedTime = 0; // in seconds
+let miningActive = false;
+let miningTimeout;
 
-const stopwatch = document.getElementById("stopwatch");
-const startButton = document.getElementById("start-button");
-
-function updateStopwatch() {
-    seconds += miningSpeed;
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = Math.floor(seconds % 60);
-    stopwatch.textContent = `${hrs}:${mins < 10 ? "0" : ""}${mins}:${secs < 10 ? "0" : ""}${secs}`;
+// Update the stopwatch display
+function updateStopwatchDisplay() {
+    let hours = Math.floor(elapsedTime / 3600).toString().padStart(2, '0');
+    let minutes = Math.floor((elapsedTime % 3600) / 60).toString().padStart(2, '0');
+    let seconds = (elapsedTime % 60).toString().padStart(2, '0');
+    document.getElementById('stopwatch').textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-startButton.addEventListener("click", () => {
-    if (!miningInterval) {
-        miningInterval = setInterval(updateStopwatch, 1000);
-        startButton.disabled = true;
-        startButton.classList.remove('green-button');
-        startButton.classList.add('gray-button');
-    }
+// Start the mining process
+function startMining() {
+    if (miningActive) return;
+    miningActive = true;
+
+    // Start the stopwatch
+    stopwatchInterval = setInterval(function() {
+        elapsedTime++;
+        updateStopwatchDisplay();
+    }, 1000);
+
+    // Disable the start button
+    const startButton = document.getElementById('start-button');
+    startButton.disabled = true;
+    startButton.classList.remove('green-button');
+    startButton.classList.add('gray-button');
+
+    // Set the mining timeout to 12 hours
+    resetMiningTimeout();
+}
+
+// Reset the mining timeout
+function resetMiningTimeout() {
+    if (miningTimeout) clearTimeout(miningTimeout);
+    miningTimeout = setTimeout(function() {
+        // Stop mining after 12 hours of inactivity
+        stopMining();
+    }, 12 * 60 * 60 * 1000); // 12 hours
+}
+
+// Stop the mining process
+function stopMining() {
+    miningActive = false;
+    clearInterval(stopwatchInterval);
+
+    // Enable the start button
+    const startButton = document.getElementById('start-button');
+    startButton.disabled = false;
+    startButton.classList.remove('gray-button');
+    startButton.classList.add('green-button');
+
+    // Reset elapsed time
+    elapsedTime = 0;
+    updateStopwatchDisplay();
+
+    alert('Mining has stopped due to inactivity. Please start again.');
+}
+
+// Event listener for the Start button
+document.getElementById('start-button').addEventListener('click', function() {
+    startMining();
 });
 
-// Навигация
-document.getElementById("mine-btn").addEventListener("click", showMainScreen);
-document.getElementById("upgrade-btn").addEventListener("click", showUpgradeScreen);
-document.getElementById("friends-btn").addEventListener("click", showFriendsScreen);
-document.getElementById("earn-btn").addEventListener("click", showEarnScreen);
+// Navigation buttons
+document.querySelectorAll('.nav-button').forEach(function(button) {
+    button.addEventListener('click', function() {
+        // Remove 'active' class from all buttons
+        document.querySelectorAll('.nav-button').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        // Add 'active' class to the clicked button
+        this.classList.add('active');
 
-function showMainScreen() {
-    hideAllScreens();
-    document.getElementById('main-screen').style.display = 'flex';
-}
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(function(screen) {
+            screen.style.display = 'none';
+        });
 
-function showUpgradeScreen() {
-    hideAllScreens();
-    document.getElementById('upgrade-screen').style.display = 'flex';
-}
-
-function showFriendsScreen() {
-    hideAllScreens();
-    document.getElementById('friends-screen').style.display = 'flex';
-}
-
-function showEarnScreen() {
-    hideAllScreens();
-    document.getElementById('earn-screen').style.display = 'flex';
-}
-
-function hideAllScreens() {
-    const screens = document.querySelectorAll('.screen');
-    screens.forEach(screen => {
-        screen.style.display = 'none';
+        // Show the selected screen
+        const screenId = this.id.replace('-button', '-screen');
+        const screen = document.getElementById(screenId);
+        if (screen) {
+            screen.style.display = 'flex';
+        }
     });
-}
+});
 
-// Upgrade функциональность
-const currentSpeedDisplay = document.getElementById('current-speed');
-const upgradeButton = document.getElementById('upgrade-button');
-let upgradeLevels = [1.15, 1.3, 1.5, 2, 4];
-let currentUpgradeIndex = 0;
-
-upgradeButton.addEventListener('click', () => {
-    if (currentUpgradeIndex < upgradeLevels.length) {
-        miningSpeed = upgradeLevels[currentUpgradeIndex];
-        currentUpgradeIndex++;
-        currentSpeedDisplay.textContent = miningSpeed.toFixed(2);
-    } else {
-        alert('Максимальный уровень улучшений достигнут.');
+// Reset mining timeout on user activity
+window.addEventListener('focus', function() {
+    if (miningActive) {
+        resetMiningTimeout();
     }
 });

@@ -1,4 +1,4 @@
-/* Основные стили */
+/* General Styles */
 body {
     margin: 0;
     background-color: black;
@@ -7,6 +7,7 @@ body {
     text-align: center;
 }
 
+/* Loading Screen */
 #loading-screen {
     position: fixed;
     top: 0;
@@ -24,29 +25,35 @@ body {
     color: white;
 }
 
+/* App Container */
 #app-container {
-    display: none;
+    display: none; /* Hidden until loading is complete */
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
 }
 
+/* Screens */
 .screen {
     flex: 1;
     display: none;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
+/* Main Screen */
 #main-screen {
-    display: flex;
+    display: flex; /* Show main screen by default */
 }
 
+/* Stopwatch */
 #stopwatch {
     font-size: 3em;
     margin-bottom: 20px;
 }
 
+/* Buttons */
 .green-button {
     background-color: green;
     color: white;
@@ -57,39 +64,35 @@ body {
     border-radius: 5px;
 }
 
-.gray-button {
+.green-button:disabled {
     background-color: gray;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 5px;
+    cursor: default;
 }
 
-#navigation {
-    display: flex;
-    justify-content: space-around;
-    background-color: #222;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 60px;
-}
-
-#navigation button {
-    flex: 1;
+.nav-button {
     background: none;
     border: none;
     color: white;
     padding: 15px;
     cursor: pointer;
     font-size: 1em;
+    flex: 1;
 }
 
-#navigation button:hover {
-    background-color: #444;
+.nav-button.active {
+    text-decoration: underline;
 }
 
+/* Navigation Bar */
+#navigation {
+    display: flex;
+    background-color: black;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Responsive Styles */
 @media (max-width: 600px) {
     #stopwatch {
         font-size: 2em;
@@ -100,7 +103,7 @@ body {
         font-size: 1em;
     }
 
-    #navigation button {
+    .nav-button {
         font-size: 0.8em;
         padding: 10px;
     }
