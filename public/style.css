@@ -5,6 +5,7 @@ body {
     color: white;
     font-family: Arial, sans-serif;
     text-align: center;
+    overflow: hidden;
 }
 
 /* Контейнер приложения */
@@ -12,10 +13,10 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    min-height: 100vh;
+    height: 100vh;
 }
 
-/* Экран */
+/* Экраны */
 .screen {
     flex: 1;
     display: none;
@@ -24,9 +25,9 @@ body {
     flex-direction: column;
 }
 
-/* Главный экран */
+/* Отображаем главный экран по умолчанию */
 #main-screen {
-    display: flex; /* Отображаем главный экран по умолчанию */
+    display: flex;
 }
 
 /* Секундомер */

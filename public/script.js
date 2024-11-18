@@ -1,11 +1,14 @@
 // Инициализация Telegram Web App
 const tg = window.Telegram.WebApp;
 
-// Когда Telegram Web App готово
+// Уведомляем Telegram, что приложение готово
 tg.ready();
 
 // Расширяем приложение на весь экран
 tg.expand();
+
+// Логирование для отладки
+console.log('Приложение загружено и готово к работе');
 
 // Переменные секундомера
 let stopwatchInterval;
@@ -27,7 +30,7 @@ function startMining() {
     miningActive = true;
 
     // Запускаем секундомер
-    stopwatchInterval = setInterval(function() {
+    stopwatchInterval = setInterval(() => {
         elapsedTime++;
         updateStopwatchDisplay();
     }, 1000);
@@ -45,7 +48,7 @@ function startMining() {
 // Сброс таймаута майнинга
 function resetMiningTimeout() {
     if (miningTimeout) clearTimeout(miningTimeout);
-    miningTimeout = setTimeout(function() {
+    miningTimeout = setTimeout(() => {
         // Останавливаем майнинг после 12 часов неактивности
         stopMining();
     }, 12 * 60 * 60 * 1000); // 12 часов
@@ -71,24 +74,18 @@ function stopMining() {
 }
 
 // Обработчик события для кнопки "Start"
-document.getElementById('start-button').addEventListener('click', function() {
-    startMining();
-});
+document.getElementById('start-button').addEventListener('click', startMining);
 
 // Навигационные кнопки
-document.querySelectorAll('.nav-button').forEach(function(button) {
+document.querySelectorAll('.nav-button').forEach((button) => {
     button.addEventListener('click', function() {
         // Удаляем класс 'active' у всех кнопок
-        document.querySelectorAll('.nav-button').forEach(function(btn) {
-            btn.classList.remove('active');
-        });
+        document.querySelectorAll('.nav-button').forEach((btn) => btn.classList.remove('active'));
         // Добавляем класс 'active' к нажатой кнопке
         this.classList.add('active');
 
         // Скрываем все экраны
-        document.querySelectorAll('.screen').forEach(function(screen) {
-            screen.style.display = 'none';
-        });
+        document.querySelectorAll('.screen').forEach((screen) => (screen.style.display = 'none'));
 
         // Показываем выбранный экран
         const screenId = this.id.replace('-button', '-screen');
@@ -100,11 +97,8 @@ document.querySelectorAll('.nav-button').forEach(function(button) {
 });
 
 // Сброс таймаута майнинга при активности пользователя
-window.addEventListener('focus', function() {
+tg.onEvent('viewportChanged', () => {
     if (miningActive) {
         resetMiningTimeout();
     }
 });
-
-// Логирование для отладки
-console.log('Приложение загружено и готово к работе');
