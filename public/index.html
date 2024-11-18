@@ -1,24 +1,36 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Game</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Экран загрузки -->
-    <div id="loading-screen">
-        <div id="loading-title">Time</div>
-        <div id="loading-text">Подключаемся ко времени...</div>
-        <div id="loading-spinner"></div>
-    </div>
+  <!-- Экран загрузки -->
+  <div id="loading-screen">
+    <p class="loading-text">mine $TIME</p>
+  </div>
 
-    <!-- Основной интерфейс -->
-    <div id="main-interface" style="display: none;">
-        <div id="stopwatch">00:00:00</div>
-    </div>
+  <!-- Основное приложение -->
+  <div id="app-container" style="display: none;">
+    <!-- Главный экран -->
+    <header>
+      <h1 id="app-title">Time Game</h1>
+    </header>
+    <main>
+      <section id="time-section">
+        <h2>Время: <span id="stopwatch">0:00:00</span></h2>
+      </section>
+      <nav id="buttons-container">
+        <button id="time-btn">Time</button>
+        <button id="upgrade-btn">Upgrade</button>
+        <button id="earn-btn">Earn</button>
+        <button id="box-btn">Box</button>
+      </nav>
+    </main>
+  </div>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -1,77 +1,77 @@
-/* Основной стиль */
+/* Общие настройки */
 body {
     margin: 0;
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(to bottom, #0d0d2b, #000);
-    color: white;
+    font-family: 'Courier New', Courier, monospace; /* Шрифт в стиле терминала */
+    background-color: #000; /* Чёрный фон */
+    color: #fff; /* Белый текст */
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    text-align: center;
-}
-
-/* Экран загрузки */
-#loading-screen {
+    overflow: hidden;
+  }
+  
+  /* Экран загрузки */
+  #loading-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .loading-text {
+    font-size: 24px; /* Средний размер текста */
+    letter-spacing: 2px; /* Межбуквенное расстояние */
+    text-transform: uppercase; /* Заглавные буквы */
+    animation: blink 1s infinite; /* Эффект мигания текста */
+  }
+  
+  /* Анимация мигания */
+  @keyframes blink {
+    50% {
+      opacity: 0.5;
+    }
+  }
+  
+  /* Основное приложение */
+  #app-container {
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    height: 100vh;
+    justify-content: space-between;
+  }
+  
+  header {
+    margin-top: 20px;
     text-align: center;
-}
-
-#loading-title {
-    font-size: 24px;
-    margin-bottom: 20px;
-    animation: fadeIn 2s;
-}
-
-#loading-text {
+  }
+  
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  #buttons-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  button {
+    background-color: #444;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
     font-size: 16px;
-    margin-bottom: 10px;
-    animation: fadeIn 3s;
-}
-
-#loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid rgba(255, 255, 255, 0.3);
-    border-top: 5px solid white;
-    border-radius: 50%;
-    animation: spin 2s linear infinite;
-}
-
-/* Основной интерфейс */
-#main-interface {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100vh;
-    text-align: center;
-}
-
-#stopwatch {
-    font-size: 36px;
-    font-weight: bold;
-}
-
-/* Анимации */
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
+    border-radius: 5px;
+  }
+  
+  button:hover {
+    background-color: #555;
+  }
