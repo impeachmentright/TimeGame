@@ -1,4 +1,4 @@
-/* Основные стили */
+/* Общие стили */
 body {
     margin: 0;
     background-color: black;
@@ -17,11 +17,11 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
 }
 
 #loading-screen h1 {
     font-size: 3em;
+    color: white;
 }
 
 #app-container {
@@ -57,9 +57,13 @@ body {
     border-radius: 5px;
 }
 
-.back-button {
-    margin-top: 20px;
+.gray-button {
+    background-color: gray;
+    color: white;
+    border: none;
     padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
 }
 
 #navigation {

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,48 +7,52 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Загрузочный экран -->
     <div id="loading-screen">
         <h1>$TIME</h1>
     </div>
 
-    <!-- App Container -->
+    <!-- Основной контейнер -->
     <div id="app-container">
-        <!-- Main Screen -->
+        <!-- Главный экран -->
         <div id="main-screen" class="screen">
             <div id="stopwatch">0:00:00</div>
-            <button id="start-button" class="green-button">Start</button>
+            <button id="start-button" class="green-button">Старт</button>
         </div>
 
-        <!-- Upgrade Screen -->
+        <!-- Экран улучшений -->
         <div id="upgrade-screen" class="screen">
-            <h2>Upgrade Mining Speed</h2>
-            <p>Current Speed: x<span id="current-speed">1</span></p>
-            <button id="upgrade-button">Upgrade</button>
-            <button id="back-from-upgrade" class="back-button">Back</button>
+            <h2>Улучшение скорости майнинга</h2>
+            <p>Текущая скорость: x<span id="current-speed">1</span></p>
+            <button id="upgrade-button" class="green-button">Улучшить</button>
+            <button id="back-from-upgrade" class="gray-button">Назад</button>
         </div>
 
-        <!-- Friends Screen -->
+        <!-- Экран друзей -->
         <div id="friends-screen" class="screen">
-            <h2>Invite Friends</h2>
-            <p>Share your referral link:</p>
+            <h2>Пригласить друзей</h2>
+            <p>Скопируйте реферальную ссылку:</p>
             <input type="text" id="referral-link" readonly>
-            <button id="copy-link-button">Copy Link</button>
-            <button id="back-from-friends" class="back-button">Back</button>
+            <button id="copy-link-button" class="green-button">Скопировать ссылку</button>
+            <button id="back-from-friends" class="gray-button">Назад</button>
         </div>
 
-        <!-- Earn Screen -->
+        <!-- Экран заданий -->
         <div id="earn-screen" class="screen">
-            <h2>Earn Rewards</h2>
+            <h2>Заработать награды</h2>
             <ul id="tasks-list">
-                <li><button class="task-button" data-task="subscribe">Subscribe to our channel</button></li>
-                <li><button class="task-button" data-task="watch-ad">Watch an ad</button></li>
+                <li>
+                    <button class="task-button" data-task="subscribe">Подписаться на канал</button>
+                </li>
+                <li>
+                    <button class="task-button" data-task="watch-ad">Посмотреть рекламу</button>
+                </li>
             </ul>
-            <button id="back-from-earn" class="back-button">Back</button>
+            <button id="back-from-earn" class="gray-button">Назад</button>
         </div>
     </div>
 
-    <!-- Navigation -->
+    <!-- Навигация -->
     <div id="navigation">
         <button id="mine-btn">Mine</button>
         <button id="upgrade-btn">Upgrade</button>
