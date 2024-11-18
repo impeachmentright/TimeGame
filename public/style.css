@@ -1,8 +1,8 @@
 /* Общие стили */
 body {
     margin: 0;
-    background-color: black;
-    color: white;
+    background-color: #000;
+    color: #fff;
     font-family: Arial, sans-serif;
     text-align: center;
     overflow: hidden;
@@ -52,6 +52,7 @@ body {
     cursor: default;
 }
 
+/* Навигационные кнопки */
 .nav-button {
     background: none;
     border: none;
@@ -69,7 +70,7 @@ body {
 /* Навигационная панель */
 #navigation {
     display: flex;
-    background-color: black;
+    background-color: #000;
     position: fixed;
     bottom: 0;
     width: 100%;

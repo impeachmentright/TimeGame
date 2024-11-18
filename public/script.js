@@ -102,3 +102,11 @@ tg.onEvent('viewportChanged', () => {
         resetMiningTimeout();
     }
 });
+
+// Обработка закрытия приложения
+tg.onEvent('webAppClosing', () => {
+    // Очистка перед закрытием, если необходимо
+    if (miningActive) {
+        stopMining();
+    }
+});
