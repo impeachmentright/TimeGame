@@ -1,112 +1,108 @@
-// Инициализация Telegram Web App
-const tg = window.Telegram.WebApp;
+// public/script.js
+const userLang = navigator.language || navigator.userLanguage;
+const isRussian = userLang.startsWith('ru');
 
-// Уведомляем Telegram, что приложение готово
-tg.ready();
+// Тексты на разных языках
+const texts = {
+  title: isRussian ? 'Добро пожаловать в TimeGame' : 'Welcome to TimeGame',
+  start: isRussian ? 'Старт' : 'Start',
+  mining: isRussian ? 'Майнинг' : 'Mining',
+  mine: isRussian ? 'Майнить' : 'Mine',
+  referral: isRussian ? 'Реферал' : 'Referral',
+  settings: isRussian ? 'Настройки' : 'Settings',
+};
 
-// Расширяем приложение на весь экран
-tg.expand();
+// Элементы DOM
+const titleElement = document.getElementById('title');
+const counterElement = document.getElementById('counter');
+const startButton = document.getElementById('startButton');
+const mineButton = document.getElementById('mineButton');
+const referralButton = document.getElementById('referralButton');
+const settingsButton = document.getElementById('settingsButton');
 
-// Логирование для отладки
-console.log('Приложение загружено и готово к работе');
+// Установка текстов
+titleElement.textContent = texts.title;
+startButton.textContent = texts.start;
+mineButton.textContent = texts.mine;
+referralButton.textContent = texts.referral;
+settingsButton.textContent = texts.settings;
 
-// Переменные секундомера
-let stopwatchInterval;
-let elapsedTime = 0; // в секундах
-let miningActive = false;
-let miningTimeout;
+// Логика приложения
+let telegramUser = null;
+let time = 0;
+let mining = false;
+let timer = null;
 
-// Обновление отображения секундомера
-function updateStopwatchDisplay() {
-    let hours = Math.floor(elapsedTime / 3600).toString().padStart(2, '0');
-    let minutes = Math.floor((elapsedTime % 3600) / 60).toString().padStart(2, '0');
-    let seconds = (elapsedTime % 60).toString().padStart(2, '0');
-    document.getElementById('stopwatch').textContent = `${hours}:${minutes}:${seconds}`;
+// Получаем данные пользователя из Telegram Web App
+window.Telegram.WebApp.ready();
+
+telegramUser = window.Telegram.WebApp.initDataUnsafe.user;
+if (!telegramUser) {
+  alert(isRussian ? 'Ошибка: пользователь Telegram не найден.' : 'Error: Telegram user not found.');
 }
 
-// Запуск процесса майнинга
-function startMining() {
-    if (miningActive) return;
-    miningActive = true;
+// Получаем или создаем пользователя на сервере
+fetch('/api/user', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ telegramId: telegramUser.id }),
+})
+  .then((res) => res.json())
+  .then((data) => {
+    time = data.time;
+    counterElement.textContent = `${time} $TIME`;
+  });
 
-    // Запускаем секундомер
-    stopwatchInterval = setInterval(() => {
-        elapsedTime++;
-        updateStopwatchDisplay();
+// Обработчик нажатия кнопки старт
+startButton.addEventListener('click', () => {
+  if (!mining) {
+    mining = true;
+    startButton.textContent = texts.mining;
+    startButton.classList.add('mining');
+
+    timer = setInterval(() => {
+      time += 1;
+      counterElement.textContent = `${time} $TIME`;
+
+      // Отправляем обновленное время на сервер
+      fetch('/api/updateTime', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegramId: telegramUser.id, time }),
+      });
     }, 1000);
+  }
+});
 
-    // Деактивируем кнопку "Start"
-    const startButton = document.getElementById('start-button');
-    startButton.disabled = true;
-    startButton.classList.remove('green-button');
-    startButton.classList.add('gray-button');
+// Обработчик кнопки Mine
+mineButton.addEventListener('click', () => {
+  // Возвращаемся на главный экран
+  window.location.href = '/';
+});
 
-    // Устанавливаем таймаут майнинга на 12 часов
-    resetMiningTimeout();
-}
+// Другие обработчики кнопок (реферал, настройки) можно добавить по аналогии
 
-// Сброс таймаута майнинга
-function resetMiningTimeout() {
-    if (miningTimeout) clearTimeout(miningTimeout);
-    miningTimeout = setTimeout(() => {
-        // Останавливаем майнинг после 12 часов неактивности
-        stopMining();
-    }, 12 * 60 * 60 * 1000); // 12 часов
-}
-
-// Остановка процесса майнинга
-function stopMining() {
-    miningActive = false;
-    clearInterval(stopwatchInterval);
-
-    // Активируем кнопку "Start"
-    const startButton = document.getElementById('start-button');
-    startButton.disabled = false;
-    startButton.classList.remove('gray-button');
-    startButton.classList.add('green-button');
-
-    // Сбрасываем прошедшее время
-    elapsedTime = 0;
-    updateStopwatchDisplay();
-
-    // Используем tg.showAlert вместо alert()
-    tg.showAlert('Майнинг остановлен из-за неактивности. Пожалуйста, начните снова.');
-}
-
-// Обработчик события для кнопки "Start"
-document.getElementById('start-button').addEventListener('click', startMining);
-
-// Навигационные кнопки
-document.querySelectorAll('.nav-button').forEach((button) => {
-    button.addEventListener('click', function() {
-        // Удаляем класс 'active' у всех кнопок
-        document.querySelectorAll('.nav-button').forEach((btn) => btn.classList.remove('active'));
-        // Добавляем класс 'active' к нажатой кнопке
-        this.classList.add('active');
-
-        // Скрываем все экраны
-        document.querySelectorAll('.screen').forEach((screen) => (screen.style.display = 'none'));
-
-        // Показываем выбранный экран
-        const screenId = this.id.replace('-button', '-screen');
-        const screen = document.getElementById(screenId);
-        if (screen) {
-            screen.style.display = 'flex';
-        }
+// Проверка на неактивность более 12 часов
+setInterval(() => {
+  // Проверяем время последней активности
+  fetch('/api/user', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ telegramId: telegramUser.id }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      const lastActive = new Date(data.lastActive);
+      const hoursDiff = (new Date() - lastActive) / 36e5;
+      if (hoursDiff >= 12) {
+        // Останавливаем майнинг
+        mining = false;
+        clearInterval(timer);
+        time = 0;
+        counterElement.textContent = `${time} $TIME`;
+        startButton.textContent = texts.start;
+        startButton.classList.remove('mining');
+        alert(isRussian ? 'Вы были неактивны более 12 часов. Прогресс обнулен.' : 'You were inactive for more than 12 hours. Progress reset.');
+      }
     });
-});
-
-// Сброс таймаута майнинга при активности пользователя
-tg.onEvent('viewportChanged', () => {
-    if (miningActive) {
-        resetMiningTimeout();
-    }
-});
-
-// Обработка закрытия приложения
-tg.onEvent('webAppClosing', () => {
-    // Очистка перед закрытием, если необходимо
-    if (miningActive) {
-        stopMining();
-    }
-});
+}, 60000); // Проверяем каждые 60 секунд
