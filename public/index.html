@@ -4,47 +4,66 @@
   <meta charset="UTF-8">
   <title>TimeGame</title>
   <style>
-    /* Стили для вашего интерфейса */
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #f0f0f0;
+      background-color: #121212; /* Темный фон */
+      color: #ffffff; /* Белый цвет текста */
+      margin: 0;
+      padding: 0;
+    }
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
     #timeDisplay {
-      font-size: 48px;
-      margin-top: 20px;
-    }
-    #startButton, #stopButton, #referralButton {
-      padding: 10px 20px;
-      font-size: 18px;
-      margin: 10px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      font-size: 72px;
+      margin-bottom: 40px;
     }
     #startButton {
-      background-color: #28a745;
+      padding: 20px 40px;
+      font-size: 24px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #00b894; /* Зеленый цвет */
       color: #fff;
+      margin-bottom: 20px;
     }
-    #stopButton {
-      background-color: #dc3545;
+    #friendsButton, #shopButton, #inventoryButton {
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
       color: #fff;
+      margin: 10px;
     }
-    #referralButton {
-      background-color: #007bff;
-      color: #fff;
+    #friendsButton {
+      background-color: #0984e3; /* Синий цвет */
     }
-    /* Новые стили для реферального раздела */
-    #referralOptions {
+    #shopButton {
+      background-color: #6c5ce7; /* Фиолетовый цвет */
+    }
+    #inventoryButton {
+      background-color: #fd79a8; /* Розовый цвет */
+    }
+    /* Стили для раздела Friends */
+    #friendsOptions {
       display: none;
-      margin-top: 20px;
+      margin-top: 30px;
     }
     #referralLink {
-      font-size: 16px;
-      margin-bottom: 10px;
+      font-size: 18px;
+      margin-bottom: 20px;
+      word-wrap: break-word;
+      width: 80%;
     }
     #copyButton, #inviteButton {
-      padding: 8px 16px;
+      padding: 10px 20px;
       font-size: 16px;
       margin: 5px;
       border: none;
@@ -52,24 +71,26 @@
       cursor: pointer;
     }
     #copyButton {
-      background-color: #17a2b8;
-      color: #fff;
+      background-color: #fdcb6e; /* Желтый цвет */
+      color: #2d3436;
     }
     #inviteButton {
-      background-color: #ffc107;
+      background-color: #e84393; /* Розовый цвет */
       color: #fff;
     }
   </style>
 </head>
 <body>
-  <h1>Добро пожаловать в TimeGame</h1>
-  <div id="app">
+  <div id="container">
+    <h1>TimeGame</h1>
     <div id="timeDisplay">00:00:00</div>
-    <button id="startButton">Начать</button>
-    <button id="stopButton" disabled>Остановить</button>
-    <br>
-    <button id="referralButton">Рефералы</button>
-    <div id="referralOptions">
+    <button id="startButton">Запустить таймер</button>
+    <div id="buttonsContainer">
+      <button id="friendsButton">Friends</button>
+      <button id="shopButton">Shop</button>
+      <button id="inventoryButton">Inventory</button>
+    </div>
+    <div id="friendsOptions">
       <p id="referralLink"></p>
       <button id="copyButton">Скопировать ссылку</button>
       <button id="inviteButton">Отправить приглашения</button>
@@ -82,15 +103,51 @@
     let timerInterval;
     const timeDisplay = document.getElementById('timeDisplay');
     const startButton = document.getElementById('startButton');
-    const stopButton = document.getElementById('stopButton');
-    const referralButton = document.getElementById('referralButton');
-    const referralOptions = document.getElementById('referralOptions');
+    const friendsButton = document.getElementById('friendsButton');
+    const shopButton = document.getElementById('shopButton');
+    const inventoryButton = document.getElementById('inventoryButton');
+    const friendsOptions = document.getElementById('friendsOptions');
     const referralLinkElem = document.getElementById('referralLink');
     const copyButton = document.getElementById('copyButton');
     const inviteButton = document.getElementById('inviteButton');
 
-    // Здесь замените 'YOUR_TELEGRAM_ID' на реальный telegramId пользователя
-    const telegramId = 'YOUR_TELEGRAM_ID';
+    // Подключаем скрипт Telegram Login Widget
+    ;(function() {
+      const script = document.createElement('script');
+      script.src = 'https://telegram.org/js/telegram-widget.js?15';
+      script.setAttribute('data-telegram-login', 'Valuetime_bot');
+      script.setAttribute('data-size', 'large');
+      script.setAttribute('data-userpic', 'false');
+      script.setAttribute('data-lang', 'ru');
+      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
+      document.body.appendChild(script);
+    })();
+
+    let telegramId = null;
+
+    function onTelegramAuth(user) {
+      telegramId = user.id.toString();
+
+      // Отправляем запрос на сервер для получения или создания пользователя
+      const urlParams = new URLSearchParams(window.location.search);
+      const referralId = urlParams.get('referralId');
+
+      fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegramId: telegramId,
+          referralId: referralId // Может быть null
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Пользователь получен или создан:', data);
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+      });
+    }
 
     function updateTime() {
       elapsedTime = Date.now() - startTime;
@@ -102,44 +159,54 @@
     }
 
     startButton.addEventListener('click', () => {
+      if (!telegramId) {
+        alert('Пожалуйста, авторизуйтесь через Telegram, чтобы начать таймер.');
+        return;
+      }
       startTime = Date.now() - elapsedTime;
       timerInterval = setInterval(updateTime, 1000);
       startButton.disabled = true;
-      stopButton.disabled = false;
-    });
 
-    stopButton.addEventListener('click', () => {
-      clearInterval(timerInterval);
-      startButton.disabled = false;
-      stopButton.disabled = true;
+      // Таймер автоматически останавливается через заданный интервал (например, 1 час)
+      setTimeout(() => {
+        clearInterval(timerInterval);
+        startButton.disabled = false;
 
-      // Отправляем время на сервер
-      fetch('/api/updateTime', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegramId: telegramId,
-          time: elapsedTime
+        // Отправляем время на сервер
+        fetch('/api/updateTime', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            telegramId: telegramId,
+            time: elapsedTime
+          })
         })
-      })
-      .then(response => {
-        if (response.ok) {
-          alert('Ваше время сохранено!');
-        } else {
-          alert('Произошла ошибка при сохранении времени.');
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка:', error);
-        alert('Произошла ошибка при соединении с сервером.');
-      });
+        .then(response => {
+          if (response.ok) {
+            alert('Ваше время сохранено!');
+            // Сбрасываем таймер
+            elapsedTime = 0;
+            timeDisplay.textContent = '00:00:00';
+          } else {
+            alert('Произошла ошибка при сохранении времени.');
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка:', error);
+          alert('Произошла ошибка при соединении с сервером.');
+        });
+      }, 3600000); // 1 час в миллисекундах
     });
 
-    referralButton.addEventListener('click', () => {
-      referralOptions.style.display = referralOptions.style.display === 'none' ? 'block' : 'none';
+    friendsButton.addEventListener('click', () => {
+      if (!telegramId) {
+        alert('Пожалуйста, авторизуйтесь через Telegram, чтобы получить реферальную ссылку.');
+        return;
+      }
+      friendsOptions.style.display = friendsOptions.style.display === 'none' ? 'block' : 'none';
       // Генерируем реферальную ссылку
       const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-      referralLinkElem.textContent = `Ваша реферальная ссылка: ${referralLink}`;
+      referralLinkElem.textContent = `Ваша реферальная ссылка:\n${referralLink}`;
     });
 
     copyButton.addEventListener('click', () => {
@@ -153,10 +220,21 @@
     });
 
     inviteButton.addEventListener('click', () => {
-      // Здесь вы можете реализовать функционал отправки приглашений
-      // Например, открыть окно для выбора контактов или поделиться ссылкой через соцсети
+      // Открываем окно для отправки ссылки через Telegram
       const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-      alert(`Отправьте эту ссылку вашим друзьям: ${referralLink}`);
+      const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('Присоединяйся к TimeGame!')}`;
+      window.open(telegramUrl, '_blank');
+    });
+
+    // Обработчики для кнопок "Shop" и "Inventory"
+    shopButton.addEventListener('click', () => {
+      alert('Раздел "Shop" в разработке.');
+      // Здесь вы можете добавить функциональность для магазина
+    });
+
+    inventoryButton.addEventListener('click', () => {
+      alert('Раздел "Inventory" в разработке.');
+      // Здесь вы можете добавить функциональность для инвентаря
     });
   </script>
 </body>
