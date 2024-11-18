@@ -8,7 +8,7 @@ window.onload = () => {
     // Hide loading screen after 3 seconds
     setTimeout(() => {
       loadingScreen.style.display = 'none';
-      appContainer.style.display = 'flex';
+      appContainer.style.display = 'block';
     }, 3000);
   };
   
@@ -32,14 +32,16 @@ window.onload = () => {
   }
   
   // Start button event listener
-  startButton.addEventListener("click", () => {
-    if (!miningInterval) {
-      miningInterval = setInterval(updateStopwatch, 1000);
-      startButton.disabled = true;
-      startButton.classList.remove('green-button');
-      startButton.classList.add('gray-button');
-    }
-  });
+  if (startButton) {
+    startButton.addEventListener("click", () => {
+      if (!miningInterval) {
+        miningInterval = setInterval(updateStopwatch, 1000);
+        startButton.disabled = true;
+        startButton.classList.remove('green-button');
+        startButton.classList.add('gray-button');
+      }
+    });
+  }
   
   // Navigation buttons
   document.getElementById("mine-btn").addEventListener("click", showMainScreen);
