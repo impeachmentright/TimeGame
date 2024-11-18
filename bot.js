@@ -10,21 +10,22 @@ const bot = new TelegramBot(token, { polling: true });
 const webAppUrl = 'https://time-game-snowy.vercel.app/'; // Замените на ваш URL
 
 // Обрабатываем команду /start
+// Обрабатываем команду /start
 bot.onText(/\/start/, (msg) => {
     const chatId = msg.chat.id;
-  
+
     // Отправляем сообщение с кнопкой веб-приложения
     bot.sendMessage(chatId, 'Нажмите кнопку ниже, чтобы открыть приложение.', {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: 'Открыть $TIME', web_app: { url: webAppUrl } }],
-        ],
-      },
+        reply_markup: {
+            inline_keyboard: [
+                [{ text: 'Открыть $TIME', web_app: { url: webAppUrl } }]
+            ]
+        }
     }).catch((error) => {
-      if (error.response && error.response.statusCode === 403) {
-        console.log(`Пользователь с chat_id ${chatId} заблокировал бота.`);
-      } else {
-        console.error('Ошибка при отправке сообщения:', error);
-      }
+        if (error.response && error.response.statusCode === 403) {
+            console.log(`Пользователь с chat_id ${chatId} заблокировал бота.`);
+        } else {
+            console.error('Ошибка при отправке сообщения:', error);
+        }
     });
-  });
+});
