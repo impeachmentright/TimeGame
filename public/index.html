@@ -6,28 +6,26 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="app-container">
-    <!-- Главный экран -->
-    <div id="main-screen" class="screen">
+  <div id="container">
+    <div id="mainContent">
       <h1>$TIME</h1>
-      <div id="stopwatch">0 $TIME</div>
-      <button id="start-button" class="green-button">Старт</button>
+      <div id="timeDisplay">0 $TIME</div>
+      <button id="startButton" class="green-button">Старт</button>
     </div>
-    <!-- Экран Friends -->
-    <div id="friends-screen" class="screen">
-      <h1>Friends</h1>
+    <div id="friendsOptions" style="display: none;">
       <p id="referralLink"></p>
       <button id="copyButton">Скопировать ссылку</button>
       <button id="inviteButton">Пригласить друзей</button>
     </div>
-    <!-- Навигационная панель -->
-    <div id="navigation">
-      <button id="mine-button" class="nav-button active">Mine</button>
-      <button id="upgrade-button" class="nav-button">Upgrade</button>
-      <button id="friends-button" class="nav-button">Friends</button>
-      <button id="earn-button" class="nav-button">Earn</button>
+    <div id="buttonsContainer">
+      <button id="mineButton" class="bottomButton active">Mine</button>
+      <button id="upgradeButton" class="bottomButton">Upgrade</button>
+      <button id="friendsButton" class="bottomButton">Friends</button>
+      <button id="earnButton" class="bottomButton">Earn</button>
     </div>
   </div>
+
+  <!-- Подключение внешнего скрипта -->
   <script src="script.js"></script>
 </body>
 </html>

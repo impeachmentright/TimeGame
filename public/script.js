@@ -1,207 +1,248 @@
 // Проверяем, работает ли приложение внутри Telegram WebApp
-const tg = window.Telegram.WebApp || null;
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
 
-if (tg) {
-  // Уведомляем Telegram, что приложение готово
-  tg.ready();
-  // Расширяем приложение на весь экран
-  tg.expand();
-} else {
-  alert('Приложение должно быть запущено внутри Telegram.');
-}
+        // Уведомляем Telegram, что приложение готово
+        tg.ready();
 
-// Получаем telegramId пользователя
-const telegramId = tg ? tg.initDataUnsafe.user.id : null;
+        // Расширяем приложение на весь экран
+        tg.expand();
 
-if (!telegramId) {
-  alert('Не удалось получить ваш Telegram ID.');
-}
+        console.log('Приложение загружено и готово к работе');
 
-// Определяем язык интерфейса
-const userLang = navigator.language || navigator.userLanguage;
-const isRussian = userLang.startsWith('ru');
+        // Определяем язык интерфейса
+        const userLang = navigator.language || navigator.userLanguage;
+        const isRussian = userLang.startsWith('ru');
 
-// Переменные
-let mining = false;
-let time = 0; // Количество $TIME
-let miningRate = 1; // Начальная скорость майнинга ($TIME в секунду)
-let lastActive = Date.now();
-let miningInterval;
-let miningTimeout;
+        // Получаем telegramId пользователя
+        const telegramId = tg.initDataUnsafe?.user?.id;
 
-// Элементы интерфейса
-const timeDisplay = document.getElementById('stopwatch');
-const startButton = document.getElementById('start-button');
-const mineButton = document.getElementById('mine-button');
-const upgradeButton = document.getElementById('upgrade-button');
-const friendsButton = document.getElementById('friends-button');
-const earnButton = document.getElementById('earn-button');
-const bottomButtons = document.querySelectorAll('.nav-button');
+        if (!telegramId) {
+            tg.showAlert(isRussian ? 'Не удалось получить ваш Telegram ID.' : 'Failed to get your Telegram ID.');
+            return;
+        }
 
-const mainScreen = document.getElementById('main-screen');
-const friendsScreen = document.getElementById('friends-screen');
+        // Переменные для майнинга
+        let mining = false;
+        let time = 0; // Количество $TIME
+        let miningRate = 1; // Начальная скорость майнинга ($TIME в секунду)
+        let lastActive = Date.now();
+        let miningInterval;
+        let miningTimeout;
 
-const referralLinkElem = document.getElementById('referralLink');
-const copyButton = document.getElementById('copyButton');
-const inviteButton = document.getElementById('inviteButton');
+        // Элементы интерфейса
+        const timeDisplay = document.getElementById('timeDisplay');
+        const startButton = document.getElementById('startButton');
+        const mineButton = document.getElementById('mineButton');
+        const upgradeButton = document.getElementById('upgradeButton');
+        const friendsButton = document.getElementById('friendsButton');
+        const earnButton = document.getElementById('earnButton');
+        const friendsOptions = document.getElementById('friendsOptions');
+        const referralLinkElem = document.getElementById('referralLink');
+        const copyButton = document.getElementById('copyButton');
+        const inviteButton = document.getElementById('inviteButton');
+        const bottomButtons = document.querySelectorAll('.bottomButton');
 
-// Обновление отображения времени
-function updateTimeDisplay() {
-  timeDisplay.textContent = `${time} $TIME`;
-}
+        // Функция обновления отображения времени
+        function updateTimeDisplay() {
+            timeDisplay.textContent = `${time} $TIME`;
+        }
 
-// Запуск процесса майнинга
-function startMining() {
-  if (mining) return;
-  mining = true;
+        // Функция запуска майнинга
+        function startMining() {
+            if (mining) return;
+            mining = true;
+            startButton.classList.add('disabled');
+            startButton.textContent = isRussian ? 'Майнинг' : 'Mining';
 
-  // Деактивируем кнопку "Старт"
-  startButton.disabled = true;
-  startButton.classList.remove('green-button');
-  startButton.classList.add('gray-button');
-  startButton.textContent = isRussian ? 'Майнинг' : 'Mining';
+            // Сохраняем состояние майнинга на сервере
+            saveUserData();
 
-  // Обновляем время последней активности
-  lastActive = Date.now();
+            // Обновляем время последней активности
+            lastActive = Date.now();
 
-  // Запускаем майнинг
-  miningInterval = setInterval(() => {
-    time += miningRate;
-    updateTimeDisplay();
-    lastActive = Date.now();
-  }, 1000);
+            // Запускаем майнинг
+            miningInterval = setInterval(() => {
+                time += miningRate;
+                updateTimeDisplay();
+                lastActive = Date.now();
+            }, 1000);
+        }
 
-  // Сбрасываем таймаут майнинга
-  resetMiningTimeout();
-}
+        // Функция остановки майнинга
+        function stopMining() {
+            mining = false;
+            startButton.classList.remove('disabled');
+            startButton.textContent = isRussian ? 'Старт' : 'Start';
+            clearInterval(miningInterval);
+            saveUserData();
+        }
 
-// Сброс таймаута майнинга
-function resetMiningTimeout() {
-  if (miningTimeout) clearTimeout(miningTimeout);
-  miningTimeout = setTimeout(() => {
-    // Останавливаем майнинг после 12 часов неактивности
-    stopMining();
-  }, 12 * 60 * 60 * 1000); // 12 часов
-}
+        // Функция сохранения данных пользователя на сервере
+        function saveUserData() {
+            fetch('/api/updateUser', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    telegramId,
+                    time,
+                    mining,
+                    miningRate,
+                    lastActive: new Date(lastActive)
+                })
+            })
+            .catch(error => {
+                console.error('Ошибка при сохранении данных пользователя:', error);
+            });
+        }
 
-// Остановка процесса майнинга
-function stopMining() {
-  mining = false;
-  clearInterval(miningInterval);
+        // Загрузка прогресса пользователя из базы данных
+        fetch('/api/getUser', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ telegramId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                time = data.time;
+                mining = data.mining;
+                miningRate = data.miningRate;
+                lastActive = new Date(data.lastActive).getTime();
+                updateTimeDisplay();
 
-  // Активируем кнопку "Старт"
-  startButton.disabled = false;
-  startButton.classList.remove('gray-button');
-  startButton.classList.add('green-button');
-  startButton.textContent = isRussian ? 'Старт' : 'Start';
+                // Проверяем, прошло ли 12 часов с последней активности
+                const hoursDiff = (Date.now() - lastActive) / 36e5;
+                if (hoursDiff >= 12) {
+                    time = 0;
+                    mining = false;
+                    updateTimeDisplay();
+                } else if (mining) {
+                    startMining();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка при загрузке данных пользователя:', error);
+        });
 
-  // Сбрасываем прошедшее время
-  time = 0;
-  updateTimeDisplay();
+        // Обработчик события для кнопки "Старт"
+        startButton.addEventListener('click', () => {
+            if (startButton.classList.contains('disabled')) return;
+            startMining();
+        });
 
-  if (tg) {
-    tg.showAlert(isRussian ? 'Майнинг остановлен из-за неактивности. Пожалуйста, начните снова.' : 'Mining stopped due to inactivity. Please start again.');
-  } else {
-    alert(isRussian ? 'Майнинг остановлен из-за неактивности. Пожалуйста, начните снова.' : 'Mining stopped due to inactivity. Please start again.');
-  }
-}
+        // Обработчики для навигационных кнопок
+        bottomButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                bottomButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
 
-// Обработчик события для кнопки "Старт"
-startButton.addEventListener('click', startMining);
+                // Скрываем все контенты
+                document.getElementById('mainContent').style.display = 'none';
+                friendsOptions.style.display = 'none';
 
-// Навигационные кнопки
-bottomButtons.forEach((button) => {
-  button.addEventListener('click', function() {
-    // Удаляем класс 'active' у всех кнопок
-    bottomButtons.forEach((btn) => btn.classList.remove('active'));
-    // Добавляем класс 'active' к нажатой кнопке
-    this.classList.add('active');
+                // Обработка нажатия кнопок
+                switch (button.id) {
+                    case 'mineButton':
+                        // Показать главный экран
+                        document.getElementById('mainContent').style.display = 'block';
+                        break;
+                    case 'upgradeButton':
+                        // Открываем экран Upgrade
+                        tg.showAlert(isRussian ? 'Раздел "Upgrade" в разработке.' : '"Upgrade" section is under development.');
+                        document.getElementById('mainContent').style.display = 'block';
+                        break;
+                    case 'friendsButton':
+                        // Открываем экран Friends
+                        friendsOptions.style.display = 'block';
+                        generateReferralLink();
+                        break;
+                    case 'earnButton':
+                        // Открываем экран Earn
+                        tg.showAlert(isRussian ? 'Раздел "Earn" в разработке.' : '"Earn" section is under development.');
+                        document.getElementById('mainContent').style.display = 'block';
+                        break;
+                }
+            });
+        });
 
-    // Скрываем все экраны
-    document.querySelectorAll('.screen').forEach((screen) => (screen.style.display = 'none'));
+        // Функции для реферальной системы
+        function generateReferralLink() {
+            const referralLink = `${window.location.origin}?referralId=${telegramId}`;
+            referralLinkElem.textContent = isRussian
+                ? `Ваша реферальная ссылка:\n${referralLink}`
+                : `Your referral link:\n${referralLink}`;
+        }
 
-    // Показываем выбранный экран
-    switch (this.id) {
-      case 'mine-button':
-        mainScreen.style.display = 'flex';
-        break;
-      case 'upgrade-button':
-        alert(isRussian ? 'Раздел "Upgrade" в разработке.' : '"Upgrade" section is under development.');
-        mainScreen.style.display = 'flex';
-        break;
-      case 'friends-button':
-        friendsScreen.style.display = 'flex';
-        generateReferralLink();
-        break;
-      case 'earn-button':
-        alert(isRussian ? 'Раздел "Earn" в разработке.' : '"Earn" section is under development.');
-        mainScreen.style.display = 'flex';
-        break;
-    }
-  });
-});
+        copyButton.addEventListener('click', () => {
+            const referralLink = `${window.location.origin}?referralId=${telegramId}`;
+            navigator.clipboard.writeText(referralLink).then(() => {
+                tg.showAlert(isRussian ? 'Реферальная ссылка скопирована в буфер обмена!' : 'Referral link copied to clipboard!');
+            }, () => {
+                tg.showAlert(isRussian ? 'Не удалось скопировать ссылку.' : 'Failed to copy the link.');
+            });
+        });
 
-// Функции для реферальной системы
-function generateReferralLink() {
-  const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-  referralLinkElem.textContent = isRussian
-    ? `Ваша реферальная ссылка:\n${referralLink}`
-    : `Your referral link:\n${referralLink}`;
-}
+        inviteButton.addEventListener('click', () => {
+            const referralLink = `${window.location.origin}?referralId=${telegramId}`;
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(isRussian ? 'Присоединяйся к $TIME!' : 'Join $TIME!')}`;
+            window.open(telegramUrl, '_blank');
+        });
 
-copyButton?.addEventListener('click', () => {
-  const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-  navigator.clipboard.writeText(referralLink).then(() => {
-    if (tg) {
-      tg.showAlert(isRussian ? 'Реферальная ссылка скопирована!' : 'Referral link copied!');
+        // Обработка реферальной ссылки при загрузке страницы
+        const urlParams = new URLSearchParams(window.location.search);
+        const referralId = urlParams.get('referralId');
+
+        if (referralId && telegramId && referralId !== telegramId.toString()) {
+            fetch('/api/addReferral', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    telegramId: telegramId.toString(),
+                    referralId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    tg.showAlert(isRussian ? 'Вы успешно присоединились по реферальной ссылке!' : 'You have successfully joined via a referral link!');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при обработке реферальной ссылки:', error);
+            });
+        }
+
+        // Проверяем, не прошло ли 12 часов с последней активности
+        setInterval(() => {
+            const hoursDiff = (Date.now() - lastActive) / 36e5;
+            if (hoursDiff >= 12) {
+                stopMining();
+                time = 0;
+                updateTimeDisplay();
+                tg.showAlert(isRussian ? 'Прошло более 12 часов без активности. Ваш прогресс обнулен.' : 'More than 12 hours of inactivity. Your progress has been reset.');
+            }
+        }, 60000); // Проверяем каждые 60 секунд
+
+        // Сброс таймаута майнинга при активности пользователя
+        tg.onEvent('viewportChanged', () => {
+            if (mining) {
+                resetMiningTimeout();
+            }
+        });
+
+        // Обработка закрытия приложения
+        tg.onEvent('webAppClosing', () => {
+            // Очистка перед закрытием, если необходимо
+            if (mining) {
+                stopMining();
+            }
+        });
+
     } else {
-      alert(isRussian ? 'Реферальная ссылка скопирована!' : 'Referral link copied!');
+        // Если Telegram.WebApp не доступен, показываем предупреждение
+        alert('Приложение должно быть запущено внутри Telegram.');
     }
-  }, () => {
-    if (tg) {
-      tg.showAlert(isRussian ? 'Не удалось скопировать ссылку.' : 'Failed to copy the link.');
-    } else {
-      alert(isRussian ? 'Не удалось скопировать ссылку.' : 'Failed to copy the link.');
-    }
-  });
 });
-
-inviteButton?.addEventListener('click', () => {
-  const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-  const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(isRussian ? 'Присоединяйся к $TIME!' : 'Join $TIME!')}`;
-  window.open(telegramUrl, '_blank');
-});
-
-// Обработка реферальной ссылки при загрузке страницы
-const urlParams = new URLSearchParams(window.location.search);
-const referralId = urlParams.get('referralId');
-
-if (referralId && telegramId && referralId !== telegramId.toString()) {
-  // Здесь вы можете отправить запрос на сервер для обработки реферала
-  // Например, используя fetch('/api/addReferral', { ... })
-}
-
-// Сброс таймаута майнинга при активности пользователя
-if (tg) {
-  tg.onEvent('viewportChanged', () => {
-    if (mining) {
-      resetMiningTimeout();
-    }
-  });
-
-  // Обработка закрытия приложения
-  tg.onEvent('webAppClosing', () => {
-    // Очистка перед закрытием, если необходимо
-    if (mining) {
-      stopMining();
-    }
-  });
-}
-
-// Проверяем, не прошло ли 12 часов с последней активности
-setInterval(() => {
-  const hoursDiff = (Date.now() - lastActive) / 36e5;
-  if (hoursDiff >= 12) {
-    stopMining();
-  }
-}, 60000); // Проверяем каждые 60 секунд
