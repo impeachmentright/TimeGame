@@ -6,38 +6,38 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     overflow: hidden;
-}
-
-/* Контейнер приложения */
-#app-container {
+  }
+  
+  /* Контейнер приложения */
+  #app-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100vh;
-}
-
-/* Экраны */
-.screen {
+  }
+  
+  /* Экраны */
+  .screen {
     flex: 1;
     display: none;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-}
-
-/* Отображаем главный экран по умолчанию */
-#main-screen {
+  }
+  
+  /* Отображаем главный экран по умолчанию */
+  #main-screen {
     display: flex;
-}
-
-/* Секундомер */
-#stopwatch {
+  }
+  
+  /* Секундомер */
+  #stopwatch {
     font-size: 3em;
     margin-bottom: 20px;
-}
-
-/* Кнопки */
-.green-button {
+  }
+  
+  /* Кнопки */
+  .green-button {
     background-color: green;
     color: white;
     border: none;
@@ -45,15 +45,25 @@ body {
     font-size: 1.5em;
     cursor: pointer;
     border-radius: 5px;
-}
-
-.green-button:disabled {
+  }
+  
+  .gray-button {
+    background-color: gray;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.5em;
+    cursor: default;
+    border-radius: 5px;
+  }
+  
+  .green-button:disabled {
     background-color: gray;
     cursor: default;
-}
-
-/* Навигационные кнопки */
-.nav-button {
+  }
+  
+  /* Навигационные кнопки */
+  .nav-button {
     background: none;
     border: none;
     color: white;
@@ -61,17 +71,17 @@ body {
     cursor: pointer;
     font-size: 1em;
     flex: 1;
-}
-
-.nav-button.active {
+  }
+  
+  .nav-button.active {
     text-decoration: underline;
-}
-
-/* Навигационная панель */
-#navigation {
+  }
+  
+  /* Навигационная панель */
+  #navigation {
     display: flex;
     background-color: #000;
     position: fixed;
     bottom: 0;
     width: 100%;
-}
+  }

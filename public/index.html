@@ -3,283 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <title>$TIME</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #000000; /* Абсолютно черный фон */
-      color: #ffffff; /* Белый цвет текста */
-      margin: 0;
-      padding: 0;
-    }
-    #container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100vh;
-    }
-    #mainContent {
-      margin-top: 50px;
-    }
-    #timeDisplay {
-      font-size: 72px;
-      margin-bottom: 20px;
-    }
-    #startButton {
-      padding: 20px 40px;
-      font-size: 24px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      background-color: #00b894; /* Зеленый цвет */
-      color: #fff;
-    }
-    #startButton.disabled {
-      background-color: #7f8c8d; /* Серый цвет */
-      cursor: default;
-    }
-    #buttonsContainer {
-      display: flex;
-      justify-content: space-around;
-      padding-bottom: 10px; /* Подняли кнопки на полсантиметра */
-    }
-    .bottomButton {
-      font-size: 18px;
-      color: #ffffff;
-      background: none;
-      border: none;
-      cursor: pointer;
-    }
-    .bottomButton.active {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="container">
-    <div id="mainContent">
+  <div id="app-container">
+    <!-- Главный экран -->
+    <div id="main-screen" class="screen">
       <h1>$TIME</h1>
-      <div id="timeDisplay">0 $TIME</div>
-      <button id="startButton">Старт</button>
+      <div id="stopwatch">0 $TIME</div>
+      <button id="start-button" class="green-button">Старт</button>
     </div>
-    <div id="friendsOptions" style="display: none;">
+    <!-- Экран Friends -->
+    <div id="friends-screen" class="screen">
+      <h1>Friends</h1>
       <p id="referralLink"></p>
       <button id="copyButton">Скопировать ссылку</button>
       <button id="inviteButton">Пригласить друзей</button>
     </div>
-    <div id="buttonsContainer">
-      <button id="mineButton" class="bottomButton active">Mine</button>
-      <button id="upgradeButton" class="bottomButton">Upgrade</button>
-      <button id="friendsButton" class="bottomButton">Friends</button>
-      <button id="earnButton" class="bottomButton">Earn</button>
+    <!-- Навигационная панель -->
+    <div id="navigation">
+      <button id="mine-button" class="nav-button active">Mine</button>
+      <button id="upgrade-button" class="nav-button">Upgrade</button>
+      <button id="friends-button" class="nav-button">Friends</button>
+      <button id="earn-button" class="nav-button">Earn</button>
     </div>
   </div>
-
-  <script>
-    // Определяем язык интерфейса
-    const userLang = navigator.language || navigator.userLanguage;
-    const isRussian = userLang.startsWith('ru');
-
-    // Элементы интерфейса
-    const timeDisplay = document.getElementById('timeDisplay');
-    const startButton = document.getElementById('startButton');
-    const mineButton = document.getElementById('mineButton');
-    const upgradeButton = document.getElementById('upgradeButton');
-    const friendsButton = document.getElementById('friendsButton');
-    const earnButton = document.getElementById('earnButton');
-    const friendsOptions = document.getElementById('friendsOptions');
-    const referralLinkElem = document.getElementById('referralLink');
-    const copyButton = document.getElementById('copyButton');
-    const inviteButton = document.getElementById('inviteButton');
-    const bottomButtons = document.querySelectorAll('.bottomButton');
-
-    // Получаем telegramId пользователя
-    const telegram = window.Telegram.WebApp;
-    telegram.expand(); // Разворачиваем приложение на весь экран
-    const telegramId = telegram.initDataUnsafe?.user?.id;
-
-    if (!telegramId) {
-      alert(isRussian ? 'Не удалось получить ваш Telegram ID.' : 'Failed to get your Telegram ID.');
-    }
-
-    // Переменные для майнинга
-    let mining = false;
-    let time = 0; // Количество $TIME
-    let miningRate = 1; // Начальная скорость майнинга ($TIME в секунду)
-    let lastActive = Date.now();
-
-    // Загрузка прогресса пользователя из базы данных
-    fetch('/api/getUser', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ telegramId })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        time = data.time;
-        mining = data.mining;
-        miningRate = data.miningRate;
-        lastActive = new Date(data.lastActive).getTime();
-        updateTimeDisplay();
-
-        // Проверяем, прошло ли 12 часов с последней активности
-        const hoursDiff = (Date.now() - lastActive) / 36e5;
-        if (hoursDiff >= 12) {
-          time = 0;
-          mining = false;
-          updateTimeDisplay();
-        } else if (mining) {
-          startMining();
-        }
-      }
-    })
-    .catch(error => {
-      console.error('Ошибка при загрузке данных пользователя:', error);
-    });
-
-    function updateTimeDisplay() {
-      timeDisplay.textContent = `${time} $TIME`;
-    }
-
-    function startMining() {
-      mining = true;
-      startButton.classList.add('disabled');
-      startButton.textContent = isRussian ? 'Майнинг' : 'Mining';
-
-      // Сохраняем состояние майнинга на сервере
-      saveUserData();
-
-      // Обновляем время последней активности
-      lastActive = Date.now();
-
-      // Запускаем майнинг
-      miningInterval = setInterval(() => {
-        time += miningRate;
-        updateTimeDisplay();
-        lastActive = Date.now();
-      }, 1000);
-    }
-
-    function stopMining() {
-      mining = false;
-      startButton.classList.remove('disabled');
-      startButton.textContent = isRussian ? 'Старт' : 'Start';
-      clearInterval(miningInterval);
-      saveUserData();
-    }
-
-    function saveUserData() {
-      fetch('/api/updateUser', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegramId,
-          time,
-          mining,
-          miningRate,
-          lastActive: new Date(lastActive)
-        })
-      })
-      .catch(error => {
-        console.error('Ошибка при сохранении данных пользователя:', error);
-      });
-    }
-
-    startButton.addEventListener('click', () => {
-      if (mining) return;
-      startMining();
-    });
-
-    // Обработчики для кнопок внизу
-    bottomButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        bottomButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-
-        // Обработка нажатия кнопок
-        switch (button.id) {
-          case 'mineButton':
-            // Возвращаемся на главный экран
-            document.getElementById('mainContent').style.display = 'block';
-            friendsOptions.style.display = 'none';
-            break;
-          case 'upgradeButton':
-            // Открываем экран Upgrade
-            alert(isRussian ? 'Раздел "Upgrade" в разработке.' : '"Upgrade" section is under development.');
-            break;
-          case 'friendsButton':
-            // Открываем экран Friends
-            document.getElementById('mainContent').style.display = 'none';
-            friendsOptions.style.display = 'block';
-            generateReferralLink();
-            break;
-          case 'earnButton':
-            // Открываем экран Earn
-            alert(isRussian ? 'Раздел "Earn" в разработке.' : '"Earn" section is under development.');
-            break;
-        }
-      });
-    });
-
-    // Функции для реферальной системы
-    function generateReferralLink() {
-      const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-      referralLinkElem.textContent = isRussian
-        ? `Ваша реферальная ссылка:\n${referralLink}`
-        : `Your referral link:\n${referralLink}`;
-    }
-
-    copyButton.addEventListener('click', () => {
-      const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-      navigator.clipboard.writeText(referralLink).then(() => {
-        alert(isRussian ? 'Реферальная ссылка скопирована в буфер обмена!' : 'Referral link copied to clipboard!');
-      }, () => {
-        alert(isRussian ? 'Не удалось скопировать ссылку.' : 'Failed to copy the link.');
-      });
-    });
-
-    inviteButton.addEventListener('click', () => {
-      const referralLink = `${window.location.origin}?referralId=${telegramId}`;
-      const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent(isRussian ? 'Присоединяйся к $TIME!' : 'Join $TIME!')}`;
-      window.open(telegramUrl, '_blank');
-    });
-
-    // Обработка реферальной ссылки при загрузке страницы
-    const urlParams = new URLSearchParams(window.location.search);
-    const referralId = urlParams.get('referralId');
-
-    if (referralId && telegramId && referralId !== telegramId.toString()) {
-      fetch('/api/addReferral', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegramId: telegramId.toString(),
-          referralId
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(isRussian ? 'Вы успешно присоединились по реферальной ссылке!' : 'You have successfully joined via a referral link!');
-        }
-      })
-      .catch(error => {
-        console.error('Ошибка при обработке реферальной ссылки:', error);
-      });
-    }
-
-    // Проверяем, не прошло ли 12 часов с последней активности
-    setInterval(() => {
-      const hoursDiff = (Date.now() - lastActive) / 36e5;
-      if (hoursDiff >= 12) {
-        stopMining();
-        time = 0;
-        updateTimeDisplay();
-        alert(isRussian ? 'Прошло более 12 часов без активности. Ваш прогресс обнулен.' : 'More than 12 hours of inactivity. Your progress has been reset.');
-      }
-    }, 60000); // Проверяем каждый час
-
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
