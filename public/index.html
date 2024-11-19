@@ -7,7 +7,7 @@
     body {
       font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #121212; /* Темный фон */
+      background-color: #000000; /* Абсолютно черный фон */
       color: #ffffff; /* Белый цвет текста */
       margin: 0;
       padding: 0;
@@ -15,13 +15,12 @@
     #container {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      justify-content: space-between;
       height: 100vh;
     }
     #timeDisplay {
       font-size: 72px;
-      margin-bottom: 40px;
+      margin-top: 50px;
     }
     #startButton {
       padding: 20px 40px;
@@ -31,27 +30,8 @@
       cursor: pointer;
       background-color: #00b894; /* Зеленый цвет */
       color: #fff;
-      margin-bottom: 20px;
+      margin-top: 20px;
     }
-    #friendsButton, #shopButton, #inventoryButton {
-      padding: 15px 30px;
-      font-size: 20px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      color: #fff;
-      margin: 10px;
-    }
-    #friendsButton {
-      background-color: #0984e3; /* Синий цвет */
-    }
-    #shopButton {
-      background-color: #6c5ce7; /* Фиолетовый цвет */
-    }
-    #inventoryButton {
-      background-color: #fd79a8; /* Розовый цвет */
-    }
-    /* Стили для раздела Friends */
     #friendsOptions {
       display: none;
       margin-top: 30px;
@@ -61,6 +41,7 @@
       margin-bottom: 20px;
       word-wrap: break-word;
       width: 80%;
+      margin: 0 auto;
     }
     #copyButton, #inviteButton {
       padding: 10px 20px;
@@ -78,22 +59,43 @@
       background-color: #e84393; /* Розовый цвет */
       color: #fff;
     }
+    #buttonsContainer {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 5px; /* Подняли кнопки на полсантиметра */
+    }
+    #friendsButton, #settingsButton {
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: #fff;
+      margin: 10px;
+    }
+    #friendsButton {
+      background-color: #0984e3; /* Синий цвет */
+    }
+    #settingsButton {
+      background-color: #6c5ce7; /* Фиолетовый цвет */
+    }
   </style>
 </head>
 <body>
   <div id="container">
-    <h1>TimeGame</h1>
-    <div id="timeDisplay">00:00:00</div>
-    <button id="startButton">Запустить таймер</button>
+    <div>
+      <h1>TimeGame</h1>
+      <div id="timeDisplay">00:00:00</div>
+      <button id="startButton">Запустить таймер</button>
+      <div id="friendsOptions">
+        <p id="referralLink"></p>
+        <button id="copyButton">Скопировать ссылку</button>
+        <button id="inviteButton">Отправить приглашения</button>
+      </div>
+    </div>
     <div id="buttonsContainer">
       <button id="friendsButton">Friends</button>
-      <button id="shopButton">Shop</button>
-      <button id="inventoryButton">Inventory</button>
-    </div>
-    <div id="friendsOptions">
-      <p id="referralLink"></p>
-      <button id="copyButton">Скопировать ссылку</button>
-      <button id="inviteButton">Отправить приглашения</button>
+      <button id="settingsButton">Settings</button>
     </div>
   </div>
 
@@ -104,50 +106,14 @@
     const timeDisplay = document.getElementById('timeDisplay');
     const startButton = document.getElementById('startButton');
     const friendsButton = document.getElementById('friendsButton');
-    const shopButton = document.getElementById('shopButton');
-    const inventoryButton = document.getElementById('inventoryButton');
+    const settingsButton = document.getElementById('settingsButton');
     const friendsOptions = document.getElementById('friendsOptions');
     const referralLinkElem = document.getElementById('referralLink');
     const copyButton = document.getElementById('copyButton');
     const inviteButton = document.getElementById('inviteButton');
 
-    // Подключаем скрипт Telegram Login Widget
-    ;(function() {
-      const script = document.createElement('script');
-      script.src = 'https://telegram.org/js/telegram-widget.js?15';
-      script.setAttribute('data-telegram-login', 'Valuetime_bot');
-      script.setAttribute('data-size', 'large');
-      script.setAttribute('data-userpic', 'false');
-      script.setAttribute('data-lang', 'ru');
-      script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-      document.body.appendChild(script);
-    })();
-
-    let telegramId = null;
-
-    function onTelegramAuth(user) {
-      telegramId = user.id.toString();
-
-      // Отправляем запрос на сервер для получения или создания пользователя
-      const urlParams = new URLSearchParams(window.location.search);
-      const referralId = urlParams.get('referralId');
-
-      fetch('/api/user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          telegramId: telegramId,
-          referralId: referralId // Может быть null
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Пользователь получен или создан:', data);
-      })
-      .catch(error => {
-        console.error('Ошибка:', error);
-      });
-    }
+    // Получаем telegramId пользователя (предполагается, что приложение внутри Telegram)
+    const telegramId = window.Telegram.WebApp.initDataUnsafe?.user?.id;
 
     function updateTime() {
       elapsedTime = Date.now() - startTime;
@@ -160,14 +126,14 @@
 
     startButton.addEventListener('click', () => {
       if (!telegramId) {
-        alert('Пожалуйста, авторизуйтесь через Telegram, чтобы начать таймер.');
+        alert('Не удалось получить ваш Telegram ID.');
         return;
       }
       startTime = Date.now() - elapsedTime;
       timerInterval = setInterval(updateTime, 1000);
       startButton.disabled = true;
 
-      // Таймер автоматически останавливается через заданный интервал (например, 1 час)
+      // Таймер автоматически останавливается через 1 час
       setTimeout(() => {
         clearInterval(timerInterval);
         startButton.disabled = false;
@@ -200,7 +166,7 @@
 
     friendsButton.addEventListener('click', () => {
       if (!telegramId) {
-        alert('Пожалуйста, авторизуйтесь через Telegram, чтобы получить реферальную ссылку.');
+        alert('Не удалось получить ваш Telegram ID.');
         return;
       }
       friendsOptions.style.display = friendsOptions.style.display === 'none' ? 'block' : 'none';
@@ -226,16 +192,33 @@
       window.open(telegramUrl, '_blank');
     });
 
-    // Обработчики для кнопок "Shop" и "Inventory"
-    shopButton.addEventListener('click', () => {
-      alert('Раздел "Shop" в разработке.');
-      // Здесь вы можете добавить функциональность для магазина
+    settingsButton.addEventListener('click', () => {
+      alert('Функционал настроек в разработке.');
+      // Добавьте необходимый функционал для кнопки "Settings"
     });
 
-    inventoryButton.addEventListener('click', () => {
-      alert('Раздел "Inventory" в разработке.');
-      // Здесь вы можете добавить функциональность для инвентаря
-    });
+    // Получение referralId из URL при загрузке страницы
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralId = urlParams.get('referralId');
+
+    // Если есть telegramId, отправляем запрос на сервер для получения или создания пользователя
+    if (telegramId) {
+      fetch('/api/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          telegramId: telegramId,
+          referralId: referralId // Может быть null
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Пользователь получен или создан:', data);
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+      });
+    }
   </script>
 </body>
 </html>
