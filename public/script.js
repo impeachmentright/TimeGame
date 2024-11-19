@@ -1,5 +1,5 @@
-// Проверяем, работает ли приложение внутри Telegram WebApp
 document.addEventListener('DOMContentLoaded', () => {
+    // Проверяем, работает ли приложение внутри Telegram WebApp
     if (window.Telegram && window.Telegram.WebApp) {
         const tg = window.Telegram.WebApp;
 
@@ -68,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateTimeDisplay();
                 lastActive = Date.now();
             }, 1000);
+
+            // Сброс таймаута майнинга
+            resetMiningTimeout();
         }
 
         // Функция остановки майнинга
@@ -77,6 +80,12 @@ document.addEventListener('DOMContentLoaded', () => {
             startButton.textContent = isRussian ? 'Старт' : 'Start';
             clearInterval(miningInterval);
             saveUserData();
+
+            if (tg) {
+                tg.showAlert(isRussian ? 'Майнинг остановлен из-за неактивности. Пожалуйста, начните снова.' : 'Mining stopped due to inactivity. Please start again.');
+            } else {
+                alert(isRussian ? 'Майнинг остановлен из-за неактивности. Пожалуйста, начните снова.' : 'Mining stopped due to inactivity. Please start again.');
+            }
         }
 
         // Функция сохранения данных пользователя на сервере
@@ -240,6 +249,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 stopMining();
             }
         });
+
+        // Функция сброса таймаута майнинга
+        function resetMiningTimeout() {
+            if (miningTimeout) clearTimeout(miningTimeout);
+            miningTimeout = setTimeout(() => {
+                // Останавливаем майнинг после 12 часов неактивности
+                stopMining();
+            }, 12 * 60 * 60 * 1000); // 12 часов
+        }
 
     } else {
         // Если Telegram.WebApp не доступен, показываем предупреждение
